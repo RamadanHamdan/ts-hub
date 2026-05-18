@@ -37,16 +37,16 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       const sessionUser = json?.user ?? null;
       setUser(sessionUser);
       
-      if (!sessionUser && pathname !== "/") {
-        router.replace("/");
-      }
+      // if (!sessionUser && pathname !== "/") {
+      //   router.replace("/");
+      // }
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    refresh();
+    // refresh();
   }, [pathname]);
 
   return (

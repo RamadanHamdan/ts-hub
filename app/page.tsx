@@ -16,47 +16,49 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Langsung redirect jika sudah login
-    refresh();
-  }, []);
+  // useEffect(() => {
+  //   // Langsung redirect jika sudah login
+  //   refresh();
+  // }, []);
 
-  const handleLogin = async () => {
-    setLoading(true);
-    setError("");
+  // const handleLogin = async () => {
+  //   setLoading(true);
+  //   setError("");
 
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identity, password }),
-      });
+  //   try {
+  //     const response = await fetch("/api/login", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ identity, password }),
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.error || "Login gagal");
-        return;
-      }
+  //     if (!response.ok) {
+  //       setError(data.error || "Login gagal");
+  //       return;
+  //     }
 
-      // Refresh session untuk memuat data user baru
-      await refresh();
+  //     // Refresh session untuk memuat data user baru
+  //     await refresh();
 
-      // Redirect ke halaman sesuai role
-      const role = data.user?.role || "tamu";
+  //     // Redirect ke halaman sesuai role
+  //     const role = data.user?.role || "tamu";
 
-      if (role === "super_admin" || role === "admin") {
-        router.push("/reservasi/input");
-      } else {
-        router.push("/dashboard"); // Default untuk tamu
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("Terjadi kesalahan koneksi");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (role === "super_admin" || role === "admin") {
+  //       // router.push("/reservasi/input");
+  //       router.push("/dashboard");
+  //     } else {
+  //       // router.push("/dashboard"); // Default untuk tamu
+  //       router.push("/");
+  //     }
+  //   } catch (err) {
+  //     console.error("Login error:", err);
+  //     setError("Terjadi kesalahan koneksi");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-200 px-4">
@@ -109,7 +111,7 @@ export default function LoginPage() {
         >
           <h2 className="text-base font-bold text-gray-700 text-center mb-5">Login please</h2>
 
-          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+          <form onSubmit={(e) => { e.preventDefault(); }}>
             {/* Input Email */}
             <div className="mb-3 flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
               <svg className="w-4 h-4 text-gray-400 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,8 +119,8 @@ export default function LoginPage() {
               </svg>
               <input
                 type="text"
-                value={identity}
-                onChange={(e) => setIdentity(e.target.value)}
+                // value={identity}
+                // onChange={(e) => setIdentity(e.target.value)}
                 className="w-full text-sm outline-none text-gray-700 placeholder-gray-300"
                 placeholder="Input your ID or Email"
                 required
@@ -132,8 +134,8 @@ export default function LoginPage() {
               </svg>
               <input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                // value={password}
+                // onChange={(e) => setPassword(e.target.value)}
                 className="w-full text-sm outline-none text-gray-700 placeholder-gray-300"
                 placeholder="Input your password"
                 required
@@ -166,7 +168,8 @@ export default function LoginPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
               </svg>
-              {loading ? "LOGIN..." : "LOG IN"}
+              {/* {loading ? "LOGIN..." : "LOG IN"} */}
+              LOG IN
             </button>
           </form>
         </div>

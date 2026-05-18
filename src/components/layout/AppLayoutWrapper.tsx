@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/src/components/sidebar/sidebar";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function AppLayoutWrapper({
   children,
@@ -22,13 +23,14 @@ export default function AppLayoutWrapper({
   }
 
   return (
-    <div className="flex h-[100dvh] bg-blue-50 overflow-hidden relative">
-      <Sidebar />
-      <div 
-        className="flex-1 w-full min-w-0 h-[100dvh] overflow-y-auto relative main-content-area"
-      >
-        {children}
+    <TooltipProvider>
+      <div className="flex h-[100dvh] bg-blue-50 overflow-hidden relative">
+        <div
+          className="flex-1 w-full min-w-0 h-[100dvh] overflow-y-auto relative main-content-area"
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
