@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "@/components/session/SessionProvider";
+import { useSession } from "@/src/components/session/SessionProvider";
 import * as Icons from "lucide-react";
 
 export default function Sidebar() {
@@ -33,10 +33,10 @@ export default function Sidebar() {
             const newState = { ...prev, [title]: prev[title] === false };
             try {
                 localStorage.setItem("sidebarAccordionState", JSON.stringify(newState));
-
             } catch (err) {
-                return newState;
+                console.error(err);
             }
+            return newState;
         });
     };
 }

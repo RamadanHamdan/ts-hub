@@ -7,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { CirclePlusIcon, MailIcon } from "lucide-react"
+import React from "react"
 
 export function NavMain({
   items,
@@ -23,7 +24,7 @@ export function NavMain({
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
-              tooltip="Quick Create"
+
               className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
             >
               <CirclePlusIcon
@@ -44,8 +45,12 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon}
+              <SidebarMenuButton>
+                {item.icon && React.isValidElement(item.icon)
+                  ? item.icon
+                  : item.icon
+                    ? React.createElement(item.icon as React.ElementType)
+                    : null}
                 <span>{item.title}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
