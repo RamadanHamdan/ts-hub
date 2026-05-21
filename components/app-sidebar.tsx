@@ -22,7 +22,7 @@ import { NavUser } from "@/components/nav-user"
 
 export default function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible="offcanvas" className="bg-white" {...props}>
+    <Sidebar collapsible="icon" className="bg-white" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

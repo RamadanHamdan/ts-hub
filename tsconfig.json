@@ -38,7 +38,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "app/dashboard/page.jsx",
-    "app/input-reservasi/page.jsx",
+    "app/input-reservasi/page.tsx",
     "components/ui/sidebar.tsx",
     "src/components/ui/SearchableSelect.tsx"
   ],

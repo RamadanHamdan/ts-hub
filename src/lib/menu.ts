@@ -12,7 +12,7 @@ export type MenuSection = {
     items: MenuItem[];
 };
 
-export const MENUS_BY_ROLE: Partial<Record<Role, MenuSection[]>> = {
+export const MENUS_BY_ROLE: Record<Role, MenuSection[]> = {
     super_admin: [
         {
             title: "Input Reservasi",
