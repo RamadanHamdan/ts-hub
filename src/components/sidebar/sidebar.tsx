@@ -45,8 +45,8 @@ export default function Sidebar() {
     fetch('/api/parameters')
       .then((res) => res.json())
       .then((json) => {
-        if (json?.data?.perusahaan) {
-          setCompanies(json.data.perusahaan)
+        if (json?.data?.tamu) {
+          setCompanies(json.data.tamu)
         }
       })
       .catch(() => {})

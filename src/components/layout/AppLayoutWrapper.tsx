@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState, useRef, Suspense } from "react";
 import { usePathname } from "next/navigation";
-import Sidebar from "@/src/components/sidebar/sidebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import Sidebar from "@/components/sidebar/sidebar";
+
 
 export default function AppLayoutWrapper({
   children,

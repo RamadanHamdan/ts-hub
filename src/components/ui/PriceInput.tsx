@@ -1,0 +1,83 @@
+"use client";
+
+import React, { useId } from "react";
+import Input, { Props as InputProps } from "react-select";
+
+export interface InputPriceProps extends Omit<
+  InputProps<{ value: string; label: string }, false>,
+  "options" | "onChange" | "value"
+> {
+  options: { value: string; label: string }[];
+  value?: string | null;
+  onChange?: (val: string) => void;
+  placeholder?: string;
+  className?: string;
+  isClearable?: boolean;
+}
+
+export default function PriceInput({
+  options,
+  value,
+  onChange,
+  placeholder = "Pilih...",
+  className = "",
+  isClearable = false,
+  ...rest
+}: InputPriceProps) {
+  // Finding the object that matches the current string value
+  const selectedOption = options.find((o) => o.value === value) || null;
+  const reactId = useId();
+
+  return (
+    <Input
+      instanceId={rest.instanceId || reactId}
+      className={`text-sm ${className}`}
+      options={options}
+      value={selectedOption}
+      onChange={(selected: any) => {
+        if (onChange) {
+          onChange(selected ? selected.value : "");
+        }
+      }}
+      placeholder={placeholder}
+      isClearable={isClearable}
+      isSearchable
+      styles={{
+        control: (base, state) => ({
+          ...base,
+          minHeight: "3rem", // h-12 (48px)
+          borderColor: state.isFocused ? "#bfdbfe" : "#e5e7eb", // blue-200 : gray-200
+          boxShadow: state.isFocused ? "0 0 0 2px #bfdbfe" : "none", // ring-2 ring-blue-200
+          "&:hover": {
+            borderColor: state.isFocused ? "#bfdbfe" : "#d1d5db",
+          },
+          borderRadius: "0.75rem", // rounded-xl (12px)
+        }),
+        valueContainer: (base) => ({
+          ...base,
+          padding: "0 1rem", // px-4 (16px) equivalent
+        }),
+        option: (base, state) => ({
+          ...base,
+          backgroundColor: state.isSelected
+            ? "#0ea5e9" // Tailwind sky-500
+            : state.isFocused
+              ? "#e0f2fe" // Tailwind sky-100
+              : "transparent",
+          color: state.isSelected ? "white" : "#1f2937", // Tailwind text-neutral-800
+          "&:active": {
+            backgroundColor: "#0ea5e9", // Tailwind sky-500
+            color: "white",
+          },
+        }),
+        menu: (base) => ({
+          ...base,
+          borderRadius: "0.5rem", // Tailwind rounded-lg
+          overflow: "hidden",
+          zIndex: 50,
+        }),
+      }}
+      {...rest}
+    />
+  );
+}

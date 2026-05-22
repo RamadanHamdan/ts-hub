@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
-import { useSession } from "@/src/components/session/SessionProvider";
+import { useSession } from "@/components/session/SessionProvider";
 import Link from "next/link";
 
 export default function LoginPage() {

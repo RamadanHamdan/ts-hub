@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono, Inter } from 'next/font/google'
 import './globals.css'
-import { SessionProvider } from '@/src/components/session/SessionProvider'
-import AppLayoutWrapper from '@/src/components/layout/AppLayoutWrapper'
+import { SessionProvider } from '@/components/session/SessionProvider'
+import AppLayoutWrapper from '@/components/layout/AppLayoutWrapper'
 import { ThemeProvider } from '@/components/theme/ThemeProvider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
