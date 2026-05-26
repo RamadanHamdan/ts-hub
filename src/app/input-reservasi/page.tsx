@@ -2,20 +2,13 @@
 
 import * as React from 'react'
 
-import {
-  HomeIcon,
-  PenIcon,
-  ListIcon,
-  Building,
-  DollarSign,
-  UserIcon,
-} from 'lucide-react'
-import Link from 'next/link'
+import { HomeIcon, Building, DollarSign, UserIcon } from 'lucide-react'
 import SearchableSelect from '@/components/ui/SearchableSelect'
 import { useState } from 'react'
-import DatePicker from '@/components/ui/DatePicker'
-import TimePicker from '@/components/ui/TimePicker'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import PriceInput from '@/components/ui/PriceInput'
+import { useSession } from '@/components/session/SessionProvider'
 
 // ✅ Array data dipindah ke luar komponen (tidak perlu re-create setiap render)
 const dataUnit = [
@@ -63,41 +56,78 @@ export default function InputReservasiPage() {
   const [namaUnit, setNamaUnit] = useState('')
   const [dataHarga, setDataHarga] = useState('')
   const [dataDuration, setNamaDuration] = useState('')
+  const [checkIn, setCheckIn] = useState<Date | null>(null)
+  const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [uangMasuk, setUangMasuk] = useState('')
   const [sisaPembayaran, setSisaPembayaran] = useState('')
   const [notePelunasan, setNotePelunasan] = useState('')
   const [noteTamu, setNoteTamu] = useState('')
   const [apart, setApart] = useState('')
-  const [selectedDate, setSelectedDate] = useState('')
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
 
   // ✅ handleKirim sekarang hanya berisi logika submit, tidak ada JSX
   const handleKirim = async () => {
-    try {
-      const requiredHeader: { value: string; label: string }[] = [
-        { value: namaAdmin, label: 'Nama Admin' },
-        { value: namaTamu, label: 'Nama Tamu' },
-        { value: namaUnit, label: 'Nama Unit' },
-        { value: dataHarga, label: 'Data Harga' },
-        { value: dataDuration, label: 'Data Duration' },
-        { value: uangMasuk, label: 'Uang Masuk' },
-        { value: sisaPembayaran, label: 'Sisa Pembayaran' },
-        { value: notePelunasan, label: 'Note Pelunasan' },
-        { value: noteTamu, label: 'Note Tamu' },
-        { value: apart, label: 'Apart' },
-      ]
-      for (const field of requiredHeader) {
-        if (!field.value) {
-          alert(`Field ${field.label} harus diisi!`)
-          return
-        } else if (field.value === 'Rp. 0' || field.value === 'Rp. 0.00') {
-          alert(`Field ${field.label} tidak boleh Rp. 0!`)
-          return
-        }
+    // 1. Validasi DULU
+    const requiredHeader: { value: string; label: string }[] = [
+      { value: namaAdmin, label: 'Nama Admin' },
+      { value: namaTamu, label: 'Nama Tamu' },
+      { value: namaUnit, label: 'Nama Unit' },
+      { value: dataHarga, label: 'Data Harga' },
+      { value: dataDuration, label: 'Data Duration' },
+      { value: uangMasuk, label: 'Uang Masuk' },
+      { value: sisaPembayaran, label: 'Sisa Pembayaran' },
+      { value: notePelunasan, label: 'Note Pelunasan' },
+      { value: noteTamu, label: 'Note Tamu' },
+      { value: apart, label: 'Apart' },
+    ]
+
+    for (const field of requiredHeader) {
+      if (!field.value) {
+        alert(`Field ${field.label} harus diisi!`)
+        return
+      } else if (field.value === 'Rp. 0' || field.value === 'Rp. 0.00') {
+        alert(`Field ${field.label} tidak boleh Rp. 0!`)
+        return
       }
-      // TODO: kirim data ke backend di sini
+    }
+
+    // 2. Konversi date/time ke string SETELAH validasi
+    const tanggal = selectedDate ? selectedDate.toLocaleDateString('id-ID') : ''
+    const checkInStr = checkIn ? checkIn.toTimeString().slice(0, 5) : ''
+    const checkOutStr = checkOut ? checkOut.toTimeString().slice(0, 5) : ''
+
+    // 3. Kirim ke API TERAKHIR
+    try {
+      const response = await fetch('/api/reservasi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          namaAdmin,
+          namaTamu,
+          namaUnit,
+          dataHarga,
+          dataDuration,
+          uangMasuk,
+          sisaPembayaran,
+          notePelunasan,
+          noteTamu,
+          apart,
+          tanggal,
+          checkIn: checkInStr,
+          checkOut: checkOutStr,
+        }),
+      })
+
+      const result = await response.json()
+      if (!response.ok) {
+        alert('Gagal menyimpan: ' + result.error)
+        return
+      }
+
+      alert('Reservasi berhasil disimpan!')
     } catch (error) {
-      console.error('Error saat validasi form:', error)
-      alert('Terjadi kesalahan saat validasi form. Silakan coba lagi.')
+      console.error('Error:', error)
+      alert('Terjadi kesalahan koneksi')
     }
   }
 
@@ -141,9 +171,8 @@ export default function InputReservasiPage() {
                     value={namaAdmin}
                     onChange={(val: string) => setNamaAdmin(val)}
                     options={[
-                      { value: 'Admin 1', label: 'Admin 1' },
-                      { value: 'Admin 2', label: 'Admin 2' },
-                      { value: 'Admin 3', label: 'Admin 3' },
+                      { value: 'RAMA', label: 'RAMA' },
+                      { value: 'AKBAR', label: 'AKBAR' },
                     ]}
                   />
                 </div>
@@ -166,13 +195,19 @@ export default function InputReservasiPage() {
               </div>
               <div>
                 <label className='text-sm font-semibold text-blue-[#0F172A]'>
-                  Tanggal
+                  Tanggal Reservasi
                 </label>
                 <div className='mt-2'>
                   <DatePicker
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className='w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50'
+                    selected={selectedDate}
+                    onChange={(date: React.SetStateAction<Date | null>) =>
+                      setSelectedDate(date)
+                    }
+                    dateFormat='dd/MM/yyyy'
+                    placeholderText='Pilih tanggal reservasi'
+                    wrapperClassName='w-full'
+                    minDate={new Date()}
+                    className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
                   />
                 </div>
               </div>
@@ -218,21 +253,40 @@ export default function InputReservasiPage() {
                     Check In & Check Out
                   </label>
                 </div>
-                <div className='grid grid-cols-2 gap-2 mt-2 md:grid-cols-2 p-2 border rounded-md border-gray-300'>
-                  <TimePicker
-                    value={
-                      dataDurasi.find((option) => option.value === dataDuration)
-                        ?.label || ''
-                    }
-                    onChange={(e) => setNamaDuration(e.target.value)}
-                  />
-                  <TimePicker
-                    value={
-                      dataDurasi.find((option) => option.value === dataDuration)
-                        ?.label || ''
-                    }
-                    onChange={(e) => setNamaDuration(e.target.value)}
-                  />
+                <div className='grid grid-cols-2 gap-2 mt-2 p-2 border rounded-xl border-gray-200'>
+                  {/* Check In */}
+                  <div className='flex flex-col gap-1'>
+                    <DatePicker
+                      selected={checkIn}
+                      onChange={(date: React.SetStateAction<Date | null>) =>
+                        setCheckIn(date)
+                      }
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeFormat='HH:mm'
+                      timeIntervals={15}
+                      dateFormat='HH:mm'
+                      placeholderText='--:--'
+                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
+                    />
+                  </div>
+
+                  {/* Check Out */}
+                  <div className='flex flex-col gap-1'>
+                    <DatePicker
+                      selected={checkOut}
+                      onChange={(date: React.SetStateAction<Date | null>) =>
+                        setCheckOut(date)
+                      }
+                      showTimeSelect
+                      showTimeSelectOnly
+                      timeFormat='HH:mm'
+                      timeIntervals={15}
+                      dateFormat='HH:mm'
+                      placeholderText='--:--'
+                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -322,9 +376,10 @@ export default function InputReservasiPage() {
                   Note Pelunasan
                 </label>
                 <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
-                  <textarea
+                  <input
                     value={notePelunasan}
                     onChange={(e) => setNotePelunasan(e.target.value)}
+                    type='text'
                     placeholder='Masukkan note pelunasan'
                     className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
                   />
@@ -352,7 +407,7 @@ export default function InputReservasiPage() {
                   <input
                     value={apart}
                     onChange={(e) => setApart(e.target.value)}
-                    type='number'
+                    type='text'
                     placeholder='Masukkan apart'
                     className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
                   />
