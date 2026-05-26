@@ -33,21 +33,17 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         credentials: 'include',
       })
       const json = await res.json().catch(() => ({}))
-
       const sessionUser = json?.user ?? null
       setUser(sessionUser)
 
-      if (!sessionUser && pathname !== '/') {
+      if (!sessionUser && !loading && pathname !== '/') {
+        // ← tambah !loading
         router.replace('/')
       }
     } finally {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    refresh()
-  }, [pathname])
 
   return (
     <SessionCtx.Provider value={{ user, loading, refresh }}>
