@@ -3,18 +3,17 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-// import type { Role, MenuSection } from '@/lib/menu'
-// import { getMenuByRole } from '@/lib/menu'
+import type { Role, MenuSection } from '@/lib/menu'
+import { getMenuByRole } from '@/lib/menu'
 import { useSession } from '@/components/session/SessionProvider'
-// import NotificationMenu from '@/components/modals/NotificationMenu'
 import * as Icons from 'lucide-react'
-import { Menu, X, ChevronUp, LogOut } from 'lucide-react'
+import { Menu, X, ChevronUp } from 'lucide-react'
 
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { user, loading } = useSession()
+  const { user, loading, logout } = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [sidebarScrollProgress, setSidebarScrollProgress] = useState(0)
   const navRef = useRef<HTMLElement>(null)
@@ -36,8 +35,8 @@ export default function Sidebar() {
     },
   )
 
-  //   const role = user?.role as Role
-  //   const rawSections: MenuSection[] = user ? getMenuByRole(role) : []
+  const role = user?.role as Role
+  const rawSections: MenuSection[] = user ? getMenuByRole(role) : []
 
   const [companies, setCompanies] = useState<string[]>([])
 
@@ -52,36 +51,36 @@ export default function Sidebar() {
       .catch(() => {})
   }, [])
 
-  //   const sections = useMemo(() => {
-  //     const toTitleCase = (str: string) => {
-  //       if (!str) return ''
-  //       return str.toLowerCase().replace(/\b\w/g, (s) => s.toUpperCase())
-  //     }
+  const sections = useMemo(() => {
+    const toTitleCase = (str: string) => {
+      if (!str) return ''
+      return str.toLowerCase().replace(/\b\w/g, (s) => s.toUpperCase())
+    }
 
-  //     return rawSections.map((section) => {
-  //       if (section.title === 'FINANCE') {
-  //         return {
-  //           ...section,
-  //           items: companies.map((company) => ({
-  //             label: toTitleCase(company),
-  //             href: `/finance?perusahaan=${encodeURIComponent(company || '')}`,
-  //             icon: 'Building',
-  //           })),
-  //         }
-  //       }
-  //       if (section.title === 'KONTRAK') {
-  //         return {
-  //           ...section,
-  //           items: companies.map((company) => ({
-  //             label: toTitleCase(company),
-  //             href: `/kontrak?perusahaan=${encodeURIComponent(company || '')}`,
-  //             icon: 'Building',
-  //           })),
-  //         }
-  //       }
-  //       return section
-  //     })
-  //   }, [rawSections, companies])
+    return rawSections.map((section) => {
+      if (section.title === 'FINANCE') {
+        return {
+          ...section,
+          items: companies.map((company) => ({
+            label: toTitleCase(company),
+            href: `/finance?perusahaan=${encodeURIComponent(company || '')}`,
+            icon: 'Building',
+          })),
+        }
+      }
+      if (section.title === 'KONTRAK') {
+        return {
+          ...section,
+          items: companies.map((company) => ({
+            label: toTitleCase(company),
+            href: `/kontrak?perusahaan=${encodeURIComponent(company || '')}`,
+            icon: 'Building',
+          })),
+        }
+      }
+      return section
+    })
+  }, [rawSections, companies])
 
   const toggleSection = (e: React.MouseEvent, title: string) => {
     e.stopPropagation()
@@ -110,28 +109,28 @@ export default function Sidebar() {
     }
   }, [isOpen])
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const el = navRef.current
-  //     if (!el) return
-  //     const totalHeight = el.scrollHeight - el.clientHeight
-  //     if (totalHeight <= 0) {
-  //       setSidebarScrollProgress(0)
-  //       return
-  //     }
-  //     const progress = (el.scrollTop / totalHeight) * 100
-  //     setSidebarScrollProgress(progress)
-  //   }
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = navRef.current
+      if (!el) return
+      const totalHeight = el.scrollHeight - el.clientHeight
+      if (totalHeight <= 0) {
+        setSidebarScrollProgress(0)
+        return
+      }
+      const progress = (el.scrollTop / totalHeight) * 100
+      setSidebarScrollProgress(progress)
+    }
 
-  //   const el = navRef.current
-  //   if (el) {
-  //     el.addEventListener('scroll', handleScroll)
-  //     handleScroll()
-  //   }
-  //   return () => {
-  //     if (el) el.removeEventListener('scroll', handleScroll)
-  //   }
-  // }, [sections])
+    const el = navRef.current
+    if (el) {
+      el.addEventListener('scroll', handleScroll)
+      handleScroll()
+    }
+    return () => {
+      if (el) el.removeEventListener('scroll', handleScroll)
+    }
+  }, [sections])
 
   if (loading) {
     return (
@@ -143,34 +142,32 @@ export default function Sidebar() {
 
   if (!user) return null
 
-  //   const userLabel =
-  //     role === 'SUPERADMIN'
-  //       ? 'SuperAdmin'
-  //       : role === 'ADMIN'
-  //         ? 'Admin'
-  //         : role === 'LEADER'
-  //           ? 'Leader'
-  //           : 'Sales'
+  const userLabel =
+    role === 'super_admin'
+      ? 'Super Admin'
+      : role === 'admin'
+        ? 'Admin'
+        : 'User'
 
-  //   const isActive = (href: string) => {
-  //     const [basePath, query] = href.split('?')
-  //     // Check if the current pathname matches the basePath
-  //     if (pathname !== basePath && !pathname.startsWith(basePath + '/')) {
-  //       return false
-  //     }
-  //     // If the menu item has a query string, it must perfectly match the current URL's query parameters
-  //     if (query) {
-  //       const urlParams = new URLSearchParams(query)
-  //       for (const [key, value] of Array.from(urlParams.entries())) {
-  //         if (searchParams.get(key) !== value) return false
-  //       }
-  //       return true
-  //     }
-  //     return true
-  //   }
+  const isActive = (href: string) => {
+    const [basePath, query] = href.split('?')
+    // Check if the current pathname matches the basePath
+    if (pathname !== basePath && !pathname.startsWith(basePath + '/')) {
+      return false
+    }
+    // If the menu item has a query string, it must perfectly match the current URL's query parameters
+    if (query) {
+      const urlParams = new URLSearchParams(query)
+      for (const [key, value] of Array.from(urlParams.entries())) {
+        if (searchParams.get(key) !== value) return false
+      }
+      return true
+    }
+    return true
+  }
 
-  //   const isSectionActive = (section: MenuSection) =>
-  //     section.items.some((item) => isActive(item.href))
+  const isSectionActive = (section: MenuSection) =>
+    section.items.some((item) => isActive(item.href))
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.targetTouches[0].clientX
@@ -190,8 +187,7 @@ export default function Sidebar() {
   }
 
   async function onLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' })
-    router.replace('/')
+    await logout()
   }
 
   // Helper: on mobile when isOpen, labels should always be visible (not rely on hover)
@@ -242,11 +238,10 @@ export default function Sidebar() {
             <Menu className='w-6 h-6' />
           </button>
           <span className='font-extrabold text-white text-lg tracking-wide'>
-            MabelHub
+            TS Hub
           </span>
         </div>
         <div className='flex items-center gap-3 text-white'>
-          {/* <NotificationMenu /> */}
           <div className='h-8 w-8 rounded-full bg-white flex items-center justify-center text-blue-900 font-bold text-xs shadow-inner'>
             {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
           </div>
@@ -271,7 +266,7 @@ export default function Sidebar() {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`fixed top-0 left-0 z-50 h-[100dvh] bg-[#1D80D9] dark:bg-[#0d1f3c] text-white transition-all duration-300 ease-in-out flex flex-col group 
+        className={`fixed top-0 left-0 z-50 h-[100dvh] bg-[#0F172A] dark:bg-[#0d1f3c] text-white transition-all duration-300 ease-in-out flex flex-col group 
           ${isOpen ? 'translate-x-0 w-[280px] shadow-2xl shadow-blue-950/50' : '-translate-x-full lg:translate-x-0 w-20 lg:hover:w-[255px] lg:hover:shadow-2xl lg:hover:shadow-blue-950/50'}
         `}
       >
@@ -284,10 +279,10 @@ export default function Sidebar() {
             className={`ml-4 flex flex-col ${labelVisibility} transition-opacity duration-300 whitespace-nowrap overflow-hidden`}
           >
             <span className='text-sm font-black text-white tracking-[0.1em]'>
-              MabelHub
+              TS Hub
             </span>
             <span className='text-[10px] text-blue-100 font-medium whitespace-nowrap'>
-              Customer Relationship Management
+              Sistem Reservasi Apartemen
             </span>
           </div>
 
@@ -312,7 +307,7 @@ export default function Sidebar() {
         </div>
 
         {/* MENU */}
-        {/* <nav
+        <nav
           ref={navRef}
           className={`flex-1 overflow-y-auto no-scrollbar px-3 py-4 space-y-3 ${isOpen ? 'sidebar-nav-mobile' : ''}`}
         >
@@ -324,7 +319,7 @@ export default function Sidebar() {
             return (
               <div key={section.title} className='space-y-1'>
                 {/* SECTION HEADER / ICON */}
-        {/* <button
+                <button
                   onClick={(e) => toggleSection(e, section.title)}
                   className={`flex items-center w-full h-12 rounded-xl transition-all duration-200 px-3 
                     ${hasActiveItem && !expanded ? 'bg-white text-blue-900' : 'text-white/60 hover:text-white hover:bg-white/10'}
@@ -347,10 +342,10 @@ export default function Sidebar() {
                       className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${expanded ? '' : 'transform rotate-180'}`}
                     />
                   </div>
-                </button> */}
+                </button>
 
-        {/* ITEMS */}
-        {/* <div
+                {/* ITEMS */}
+                <div
                   className={`space-y-1 overflow-hidden transition-all duration-300 
                     ${expanded ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
                     ${!isOpen ? 'lg:hidden lg:group-hover:block' : ''}
@@ -385,11 +380,11 @@ export default function Sidebar() {
                       </Link>
                     )
                   })}
-                </div> */}
-        {/* </div> */}
-        {/* )
-          })} */}
-        {/* </nav> } */}
+                </div>
+              </div>
+            )
+          })}
+        </nav>
 
         {/* PROFILE & LOGOUT SECTION */}
         <div className='mt-auto border-t border-white/10 bg-black/20 dark:bg-black/40'>
@@ -405,7 +400,7 @@ export default function Sidebar() {
                 {user.fullName}
               </span>
               <span className='text-blue-100 dark:text-blue-300 font-bold text-[10px] tracking-wider'>
-                {/* {userLabel.toUpperCase()} */}
+                {userLabel.toUpperCase()}
               </span>
             </div>
           </div>
