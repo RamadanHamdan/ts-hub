@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
 export type SessionUser = {
@@ -16,6 +16,7 @@ type SessionState = {
   loading: boolean
   refresh: () => Promise<void>
   logout: () => Promise<void>
+  setUser: (user: SessionUser | null) => void
 }
 
 const SessionCtx = createContext<SessionState | null>(null)
@@ -26,7 +27,26 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
 
-  async function refresh() {
+  // Track whether user was already set directly (e.g., from login response)
+  // to skip the redundant /api/auth/me fetch
+  const userSetDirectly = useRef(false)
+
+  // Wrapped setUser that also marks the direct-set flag
+  const setUserDirect = useCallback((u: SessionUser | null) => {
+    if (u) {
+      userSetDirectly.current = true
+    }
+    setUser(u)
+    setLoading(false)
+  }, [])
+
+  const refresh = useCallback(async () => {
+    // Skip fetch if user was already set directly (e.g., from login response)
+    if (userSetDirectly.current) {
+      userSetDirectly.current = false
+      return
+    }
+
     setLoading(true)
     try {
       const res = await fetch('/api/auth/me', {
@@ -41,14 +61,19 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       if (!sessionUser && pathname !== '/' && pathname !== '/signup') {
         router.replace('/')
       }
+    } catch (err) {
+      // Network error — treat as no session
+      console.error('Session refresh error:', err)
+      setUser(null)
     } finally {
       setLoading(false)
     }
-  }
+  }, [pathname, router])
 
   async function logout() {
     // Clear user state FIRST to prevent redirect loops
     setUser(null)
+    userSetDirectly.current = false
     try {
       await fetch('/api/auth/logout', { method: 'POST' })
     } catch (err) {
@@ -64,7 +89,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <SessionCtx.Provider value={{ user, loading, refresh, logout }}>
+    <SessionCtx.Provider value={{ user, loading, refresh, logout, setUser: setUserDirect }}>
       {children}
     </SessionCtx.Provider>
   )

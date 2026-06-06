@@ -4,19 +4,37 @@ import { connectDB } from '@/lib/mongoose'
 import { User, verifyPassword } from '@/models/User'
 
 export async function POST(req: NextRequest) {
+  let body: { identity?: string; password?: string }
+
   try {
-    const body = await req.json()
-    const { identity, password } = body
+    body = await req.json()
+  } catch {
+    return NextResponse.json(
+      { error: 'Request body tidak valid.' },
+      { status: 400 },
+    )
+  }
 
-    if (!identity || !password) {
-      return NextResponse.json(
-        { error: 'Username/email dan password harus diisi.' },
-        { status: 400 },
-      )
-    }
+  const { identity, password } = body
 
+  if (!identity || !password) {
+    return NextResponse.json(
+      { error: 'Username/email dan password harus diisi.' },
+      { status: 400 },
+    )
+  }
+
+  try {
     await connectDB()
+  } catch (dbError) {
+    console.error('Database connection error:', dbError)
+    return NextResponse.json(
+      { error: 'Gagal terhubung ke database. Silakan coba lagi.' },
+      { status: 503 },
+    )
+  }
 
+  try {
     // Cari user berdasarkan username atau email
     const user = await User.findOne({
       $or: [

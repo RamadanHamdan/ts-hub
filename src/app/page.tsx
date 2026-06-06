@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, refresh } = useSession();
+  const { user, refresh, setUser } = useSession();
 
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
@@ -32,21 +32,31 @@ export default function LoginPage() {
         body: JSON.stringify({ identity, password }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        setError("Server tidak merespons dengan benar. Coba lagi.");
+        return;
+      }
 
       if (!response.ok) {
         setError(data.error || "Login gagal");
         return;
       }
 
-      // Refresh session untuk memuat data user baru
-      await refresh();
+      // Set user langsung dari response login (tanpa perlu fetch /api/auth/me lagi)
+      setUser(data.user);
 
       // Redirect ke dashboard
       router.push("/dashboard");
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Login error:", err);
-      setError("Terjadi kesalahan koneksi");
+      if (err instanceof TypeError && err.message.includes("NetworkError")) {
+        setError("Tidak dapat terhubung ke server. Pastikan server berjalan dan koneksi internet aktif.");
+      } else {
+        setError("Terjadi kesalahan koneksi. Silakan coba lagi.");
+      }
     } finally {
       setLoading(false);
     }

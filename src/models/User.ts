@@ -36,6 +36,10 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true },
 )
 
+// Compound indexes for optimized login query ($or with isActive filter)
+UserSchema.index({ username: 1, isActive: 1 })
+UserSchema.index({ email: 1, isActive: 1 })
+
 // Helper: hash password with salt
 export function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
   const s = salt || randomBytes(16).toString('hex')

@@ -27,13 +27,16 @@ export const MENUS_BY_ROLE: Record<Role, MenuSection[]> = {
       items: [
         { label: 'Input Reservasi', href: '/input-reservasi', icon: 'CalendarPlus' },
         { label: 'Tracking Reservasi', href: '/tracking-reservasi', icon: 'BarChart3' },
+        { label: 'Room Status', href: '/room-status', icon: 'Bed'},
       ],
     },
     {
-      title: 'USER MANAGEMENT',
-      icon: 'Users',
+      title: 'MANAJEMEN',
+      icon: 'ShieldCheck',
       items: [
         { label: 'Kelola Users', href: '/users', icon: 'UserCog' },
+        { label: 'Parameter', href: '/parameter', icon: 'Settings' },
+        { label: 'Kelola Unit', href: '/unit', icon: 'Building'}
       ],
     },
   ],
@@ -42,8 +45,8 @@ export const MENUS_BY_ROLE: Record<Role, MenuSection[]> = {
       title: 'RESERVASI',
       icon: 'Calendar',
       items: [
-        { label: 'Input Reservasi', href: '/input-reservasi', icon: 'CalendarPlus' },
-        { label: 'Tracking Reservasi', href: '/tracking-reservasi', icon: 'BarChart3' },
+        { label: 'Input Reservasi', href: '/input-reservasi', icon: 'Home' },
+        { label: 'Room Status', href: '/room-status', icon: 'Bed'},
       ],
     },
   ],

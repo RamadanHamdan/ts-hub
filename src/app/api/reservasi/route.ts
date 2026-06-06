@@ -1,12 +1,14 @@
 import { NextResponse, NextRequest } from 'next/server'
-import clientPromise from '@/lib/mongodb'
+import { connectDB } from '@/lib/mongoose'
+import { InputDatabase } from '@/models/InputDatabase'
 
 type ReservasiItem = {
   id: number
   user_id: number
   nama_tamu: string
+  no_tamu: string
   tanggal_reservasi: Date
-  type_unit: string
+  nama_unit: string
   duration: string
   tanggal_checkin: Date
   tanggal_checkout: Date
@@ -21,40 +23,61 @@ type ReservasiItem = {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
+    const { header, items } = body
 
     // Validasi: pastikan body bukan object kosong
-    if (!body || Object.keys(body).length === 0) {
+    if (!header || !items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid request body. Data reservasi harus diisi.' },
+        { error: 'Payload tidak valid: header atau items kosong' },
         { status: 400 },
       )
     }
-    const client = await clientPromise
 
-    const db = client.db('TSHUB')
-
-    const col = db.collection('input_database')
+    await connectDB()
 
     const now = new Date()
-    const doc = {
-      ...body,
-      createdAt: now,
-      updatedAt: now,
-    }
+    const docs = items.map((item: ReservasiItem) => ({
+      user_id: header.userId || "",
+      nama_admin: header.namaAdmin || "",
+      tanggal_reservasi: header.tanggalReservasi || "",
+      nama_unit: header.namaUnit || "",
+      data_durasi: header.dataDuration || "",
+      check_in: header.checkIn || "",
+      check_out: header.checkOut || "",
+      data_harga: Number(header.dataHarga) || 0,
+      uang_masuk: Number(header.uangMasuk) || 0,
+      sisa_pembayaran: Number(header.sisaPembayaran) || 0,
+      note_pelunasan: header.notePelunasan || "",
+      note_admin: header.noteAdmin || "",
+      nama_apart: header.namaApart || "",
+      // data tamu
+      nama_tamu: item.nama_tamu || "",
+      nomor_telp_tamu: item.no_tamu || "",
+      // Metadata
+      created_at: now,
+      updated_at: now,
+    }))
 
-    const result = await col.insertOne(doc)
+    const result = await InputDatabase.insertMany(docs)
 
-    if (!result.insertedId) {
+    if (!result.length) {
       return NextResponse.json(
         { error: 'Gagal menyimpan reservasi.' },
         { status: 500 },
       )
     }
 
+    // Build insertedIds map similar to native driver response
+    const insertedIds: Record<number, string> = {}
+    result.forEach((doc, idx) => {
+      insertedIds[idx] = doc._id.toString()
+    })
+
     return NextResponse.json(
       {
         message: 'Reservasi berhasil disimpan.',
-        insertedId: result.insertedId,
+        insertedCount: result.length,
+        insertedIds,
       },
       { status: 201 },
     )
@@ -65,3 +88,49 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url)
+    const phone = searchParams.get('phone') || ''
+
+    if (!phone || phone.length < 3) {
+      return NextResponse.json({ data: [] })
+    }
+
+    await connectDB()
+
+    const results = await InputDatabase.aggregate([
+      {
+        $match: {
+          nomor_telp_tamu: { $regex: phone, $options: 'i' }
+        }
+      },
+      {
+        $group: {
+          _id: '$nomor_telp_tamu',
+          nama_tamu: { $first: '$nama_tamu' }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          telp: '$_id',
+          nama: '$nama_tamu'
+        }
+      },
+      {
+        $limit: 10
+      }
+    ])
+
+    return NextResponse.json({ data: results })
+  } catch (error) {
+    console.error('Error fetching phone predictions:', error)
+    return NextResponse.json(
+      { error: 'Terjadi kesalahan saat mengambil data.' },
+      { status: 500 },
+    )
+  }
+}
+
