@@ -228,7 +228,7 @@ export default function Sidebar() {
       `}</style>
 
       {/* Mobile Top Header */}
-      <header className='lg:hidden fixed top-0 left-0 right-0 h-16 bg-blue-900 dark:bg-[#0d1f3c] z-40 border-b border-white/10 flex items-center justify-between px-4 shadow-lg'>
+      <header className='print:hidden lg:hidden fixed top-0 left-0 right-0 h-16 bg-blue-900 dark:bg-[#0d1f3c] z-40 border-b border-white/10 flex items-center justify-between px-4 shadow-lg'>
         <div className='flex items-center gap-3'>
           <button
             onClick={() => setIsOpen(true)}
@@ -266,7 +266,7 @@ export default function Sidebar() {
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className={`fixed top-0 left-0 z-50 h-[100dvh] bg-[#0F172A] dark:bg-[#0d1f3c] text-white transition-all duration-300 ease-in-out flex flex-col group 
+        className={`print:hidden fixed top-0 left-0 z-50 h-[100dvh] bg-[#0F172A] dark:bg-[#0d1f3c] text-white transition-all duration-300 ease-in-out flex flex-col group 
           ${isOpen ? 'translate-x-0 w-[280px] shadow-2xl shadow-blue-950/50' : '-translate-x-full lg:translate-x-0 w-20 lg:hover:w-[255px] lg:hover:shadow-2xl lg:hover:shadow-blue-950/50'}
         `}
       >

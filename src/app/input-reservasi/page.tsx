@@ -7,50 +7,37 @@ import SearchableSelect from '@/components/ui/SearchableSelect'
 import { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import PriceInput from '@/components/ui/PriceInput'
 import { useSession } from '@/components/session/SessionProvider'
 import { getUnitOptions } from '@/data/typeunit'
 import { useRouter } from 'next/navigation'
 
-// ✅ Array data dipindah ke luar komponen (tidak perlu re-create setiap render)
-// const dataUnit = [
-//   { value: 'TD.1134', label: 'TD.1134' },
-//   { value: 'TB.1534', label: 'TB.1534' },
-//   { value: 'TA.2118', label: 'TA.2118' },
-//   { value: 'TA.0812', label: 'TA.0812' },
-//   { value: 'TC.0826', label: 'TC.0826' },
-//   { value: 'TA.0933', label: 'TA.0933' },
-//   { value: 'TC.1608', label: 'TC.1608' },
-//   { value: 'TC.0630', label: 'TC.0630' },
-//   { value: 'TA.0931', label: 'TA.0931' },
-//   { value: 'TA.0932', label: 'TA.0932' },
-//   { value: 'TB.1728', label: 'TB.1728' },
-//   { value: 'TB.0919', label: 'TB.0919' },
-//   { value: 'TC.1727', label: 'TC.1727' },
-//   { value: 'TD.1028', label: 'TD.1028' },
-//   { value: 'TD.2126', label: 'TD.2126' },
-//   { value: 'TA.1126', label: 'TA.1126' },
-//   { value: 'TC.0507', label: 'TC.0507' },
-//   { value: 'GAA TB.0508', label: 'GAA TB.0508' },
-//   { value: 'GAA TC.0528', label: 'GAA TC.0528' },
-//   { value: 'GAA TB.0622', label: 'GAA TB.0622' },
-//   { value: 'GAA TB.0510', label: 'GAA TB.0510' },
-//   { value: 'TB.0510 GAA', label: 'TB.0510 GAA' },
-// ]
+type Admin = {
+  full_name: string,
+  username: string,
+}
 
 const dataDurasi = [
-  { value: '1 Malam', label: '1 Malam' },
+  // { value: '1 Malam', label: '1 Malam' },
   { value: 'Halfday Malam', label: 'Halfday Malam' },
   { value: 'Transit', label: 'Transit' },
-  { value: 'Extend', label: 'Extend' },
 ]
 
-const hargaData = [
-  { value: '500000', label: 'Rp 500.000' },
-  { value: '750000', label: 'Rp 750.000' },
-  { value: '1000000', label: 'Rp 1.000.000' },
-  { value: '1250000', label: 'Rp 1.250.000' },
-]
+// ✅ Helper: validasi format waktu HH:MM (24 jam)
+function isValidTime(val: string): boolean {
+  return /^([01]\d|2[0-3]):[0-5]\d$/.test(val.trim())
+}
+
+// ✅ Helper: format input waktu secara otomatis (auto-tambah ':')
+function formatTimeInput(raw: string): string {
+  // Hanya izinkan angka dan ':'
+  let cleaned = raw.replace(/[^\d:]/g, '')
+  // Auto-insert ':' setelah 2 digit jika user belum ketik ':'
+  if (cleaned.length >= 3 && !cleaned.includes(':')) {
+    cleaned = cleaned.slice(0, 2) + ':' + cleaned.slice(2)
+  }
+  // Batasi panjang ke 5 karakter (HH:MM)
+  return cleaned.slice(0, 5)
+}
 
 // ✅ Helper: format angka ke Rupiah (tampilan client)
 function formatRupiah(value: number | string): string {
@@ -72,18 +59,32 @@ function calculateSisaPembayaran(dataHarga: number, uangMasuk: number): number {
 
 export default function InputReservasiPage() {
   const router = useRouter()
+  const { user } = useSession()
   const [namaAdmin, setNamaAdmin] = useState('')
   const [noTelp, setNoTelp] = useState('')
   const [namaTamu, setNamaTamu] = useState('')
   const [namaUnit, setNamaUnit] = useState('')
   const [dataHarga, setDataHarga] = useState<number>(0)
   const [dataDuration, setNamaDuration] = useState('')
-  const [checkIn, setCheckIn] = useState<Date | null>(null)
-  const [checkOut, setCheckOut] = useState<Date | null>(null)
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null])
+  const [startDate, endDate] = dateRange
+  const [checkInText, setCheckInText] = useState('')
+  const [checkOutText, setCheckOutText] = useState('')
+  const [checkInError, setCheckInError] = useState('')
+  const [checkOutError, setCheckOutError] = useState('')
+  const [isMultiDay, setIsMultiDay] = useState(false)
+  const [isSingleDay, setIsSingleDay] = useState(false)
   const [uangMasuk, setUangMasuk] = useState<number>(0)
   const [sisaPembayaran, setSisaPembayaran] = useState<number | null>(null)
   const [phoneSuggestions, setPhoneSuggestions] = useState<{telp: string, nama: string}[]>([])
   const [showPhoneSuggestions, setShowPhoneSuggestions] = useState(false)
+
+  // ✅ Auto-fill nama admin dari session user yang login
+  useEffect(() => {
+    if (user?.fullName && !namaAdmin) {
+      setNamaAdmin(user.fullName)
+    }
+  }, [user, namaAdmin])
 
   // ✅ Autocomplete nomor telepon
   useEffect(() => {
@@ -115,7 +116,39 @@ export default function InputReservasiPage() {
   const [notePelunasan, setNotePelunasan] = useState('')
   const [noteTamu, setNoteTamu] = useState('')
   const [apart, setApart] = useState('')
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  // ✅ Auto-kalkulasi durasi dan teks check-in/out ketika date range berubah
+  useEffect(() => {
+    if (startDate) {
+      if (endDate && endDate.getTime() !== startDate.getTime()) {
+        // Multi-day: auto-fill durasi, check-in dan check-out
+        const nights = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+        setIsMultiDay(true);
+        if (nights > 0) {
+          setNamaDuration(`${nights} Malam`);
+        }
+        setIsSingleDay(false);
+        if (nights === 1) {
+          setNamaDuration('1 Malam');
+          setIsSingleDay(true);
+        }
+        setCheckInText(`14:00 (${startDate.toLocaleDateString('id-ID')})`);
+        setCheckOutText(`12:00 (${endDate.toLocaleDateString('id-ID')})`);
+        setCheckInError('');
+        setCheckOutError('');
+      } else {
+        // Single-day: user isi durasi & jam manual
+        setIsMultiDay(false);
+        setNamaDuration('');
+        setCheckInText('');
+        setCheckOutText('');
+      }
+    } else {
+      setIsMultiDay(false);
+      setNamaDuration('');
+      setCheckInText('');
+      setCheckOutText('');
+    }
+  }, [startDate, endDate])
   const [items, setItems] = useState<
     {
       id: string
@@ -138,7 +171,9 @@ export default function InputReservasiPage() {
     })
   }
 
-  const { user } = useSession()
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false)
+  const [newInvoiceId, setNewInvoiceId] = useState('')
+
 
   // ✅ handleKirim sekarang hanya berisi logika submit, tidak ada JSX
   const handleKirim = async () => {
@@ -174,12 +209,29 @@ export default function InputReservasiPage() {
       }
     }
 
-    // 2. Konversi date/time ke string SETELAH validasi
-    const tanggalReservasi = selectedDate
-      ? selectedDate.toLocaleDateString('id-ID')
+    // 2a. Validasi waktu check-in/check-out
+    if (!isMultiDay) {
+      if (!isValidTime(checkInText)) {
+        alert('Format Check In tidak valid! Gunakan format HH:MM (contoh: 14:00)')
+        return
+      }
+      if (!isValidTime(checkOutText)) {
+        alert('Format Check Out tidak valid! Gunakan format HH:MM (contoh: 12:00)')
+        return
+      }
+    }
+
+    // 2b. Konversi date/time ke string SETELAH validasi
+    const tanggalReservasi = startDate
+      ? startDate.toLocaleDateString('id-ID')
       : ''
-    const checkInStr = checkIn ? checkIn.toTimeString().slice(0, 5) : ''
-    const checkOutStr = checkOut ? checkOut.toTimeString().slice(0, 5) : ''
+    // Untuk single-day, gabungkan jam + tanggal
+    const checkInStr = isMultiDay
+      ? checkInText
+      : `${checkInText} (${startDate?.toLocaleDateString('id-ID') || ''})`
+    const checkOutStr = isMultiDay
+      ? checkOutText
+      : `${checkOutText} (${startDate?.toLocaleDateString('id-ID') || ''})`
 
     // 3. Kirim ke API dengan format { header, items } sesuai route.ts
     try {
@@ -216,8 +268,15 @@ export default function InputReservasiPage() {
         alert('Gagal menyimpan: ' + result.error)
         return
       }
-      router.push('/room-status')
-      alert('Reservasi berhasil disimpan!')
+      
+      const newId = result.insertedIds && result.insertedIds["0"] ? result.insertedIds["0"] : null
+      if (newId) {
+        setNewInvoiceId(newId)
+        setShowInvoiceModal(true)
+      } else {
+        alert('Reservasi berhasil disimpan!')
+        router.push('/room-status')
+      }
     } catch (error) {
       console.error('Error:', error)
       alert('Terjadi kesalahan koneksi')
@@ -266,13 +325,12 @@ export default function InputReservasiPage() {
                   NAMA ADMIN
                 </label>
                 <div className='mt-2'>
-                  <SearchableSelect
+                  <input
+                    type="text"
                     value={namaAdmin}
-                    onChange={(val: string) => setNamaAdmin(val)}
-                    options={[
-                      { value: 'RAMA', label: 'RAMA' },
-                      { value: 'AKBAR', label: 'AKBAR' },
-                    ]}
+                    onChange={(e) => setNamaAdmin(e.target.value)}
+                    placeholder="Nama Admin"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400"
                   />
                 </div>
               </div>
@@ -282,12 +340,12 @@ export default function InputReservasiPage() {
                 </label>
                 <div className='mt-2'>
                   <DatePicker
-                    selected={selectedDate}
-                    onChange={(date: React.SetStateAction<Date | null>) =>
-                      setSelectedDate(date)
-                    }
+                    selectsRange={true}
+                    startDate={startDate || undefined}
+                    endDate={endDate || undefined}
+                    onChange={(update: [Date | null, Date | null]) => setDateRange(update)}
                     dateFormat='dd/MM/yyyy'
-                    placeholderText='Pilih tanggal reservasi'
+                    placeholderText='Pilih rentang tanggal'
                     wrapperClassName='w-full'
                     minDate={new Date()}
                     className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
@@ -314,17 +372,30 @@ export default function InputReservasiPage() {
                   DURATION
                 </label>
                 <div className='mt-2'>
-                  <SearchableSelect
-                    value={
-                      dataDurasi.find((option) => option.value === dataDuration)
-                        ?.label || ''
-                    }
-                    onChange={(val: string) => setNamaDuration(val)}
-                    options={dataDurasi.map((p) => ({
-                      value: p.value,
-                      label: p.label,
-                    }))}
-                  />
+                  {isMultiDay ? (
+                    <input
+                      type='text'
+                      readOnly
+                      value={dataDuration}
+                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-green-50 text-sm font-semibold text-green-700 shadow-sm cursor-not-allowed'
+                    />
+                  ) : (
+                    <SearchableSelect
+                      value={
+                        dataDurasi.find((option) => option.value === dataDuration)?.label || dataDuration || ''
+                      }
+                      onChange={(val: string) => setNamaDuration(val)}
+                      options={[
+                        ...dataDurasi,
+                        ...(dataDuration && !dataDurasi.some(d => d.value === dataDuration) 
+                          ? [{ value: dataDuration, label: dataDuration }] 
+                          : [])
+                      ].map((p) => ({
+                        value: p.value,
+                        label: p.label,
+                      }))}
+                    />
+                  )}
                 </div>
               </div>
               <div>
@@ -332,23 +403,57 @@ export default function InputReservasiPage() {
                   <label className='text-sm justify-content items-center font-semibold text-blue-[#0F172A]'>
                     Check In
                   </label>
+                  {isMultiDay && (
+                    <span className='text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium'>Auto</span>
+                  )}
                 </div>
                 <div className='gap-2 mt-2 p-2 border rounded-xl border-gray-200'>
                   {/* Check In */}
                   <div className='flex flex-col gap-1'>
-                    <DatePicker
-                      selected={checkIn}
-                      onChange={(date: React.SetStateAction<Date | null>) =>
-                        setCheckIn(date)
-                      }
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeFormat='HH:mm'
-                      timeIntervals={15}
-                      dateFormat='HH:mm'
-                      placeholderText='--:--'
-                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
-                    />
+                    {isMultiDay ? (
+                      <input
+                        type='text'
+                        readOnly
+                        value={checkInText}
+                        className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-green-50 text-sm font-semibold text-green-700 shadow-sm cursor-not-allowed'
+                      />
+                    ) : (
+                      <>
+                        <input
+                          type='text'
+                          value={checkInText}
+                          onChange={(e) => {
+                            const formatted = formatTimeInput(e.target.value)
+                            setCheckInText(formatted)
+                            if (formatted.length === 5 && !isValidTime(formatted)) {
+                              setCheckInError('Format waktu tidak valid (HH:MM, 00:00 - 23:59)')
+                            } else {
+                              setCheckInError('')
+                            }
+                          }}
+                          onBlur={() => {
+                            if (checkInText && !isValidTime(checkInText)) {
+                              setCheckInError('Format waktu tidak valid (HH:MM, 00:00 - 23:59)')
+                            }
+                          }}
+                          placeholder='Contoh: 14:00'
+                          maxLength={5}
+                          className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:border-transparent hover:border-gray-400 ${
+                            checkInError
+                              ? 'border-red-400 bg-red-50 text-red-700 focus:ring-red-300'
+                              : 'border-gray-200 bg-gray-50 text-gray-700 focus:ring-[#0F172A]'
+                          }`}
+                        />
+                        {checkInError && (
+                          <span className='text-xs text-red-500 mt-1 pl-1'>{checkInError}</span>
+                        )}
+                        {startDate && !checkInError && checkInText && (
+                          <span className='text-xs text-gray-400 mt-1 pl-1'>
+                            → {checkInText} ({startDate.toLocaleDateString('id-ID')})
+                          </span>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -357,23 +462,57 @@ export default function InputReservasiPage() {
                   <label className='text-sm justify-content items-center font-semibold text-blue-[#0F172A]'>
                     Check Out
                   </label>
+                  {isMultiDay && (
+                    <span className='text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium'>Auto</span>
+                  )}
                 </div>
                 {/* Check Out */}
                 <div className='gap-2 mt-2 p-2 border rounded-xl border-gray-200'>
                   <div className='flex flex-col gap-1'>
-                    <DatePicker
-                      selected={checkOut}
-                      onChange={(date: React.SetStateAction<Date | null>) =>
-                        setCheckOut(date)
-                      }
-                      showTimeSelect
-                      showTimeSelectOnly
-                      timeFormat='HH:mm'
-                      timeIntervals={15}
-                      dateFormat='HH:mm'
-                      placeholderText='--:--'
-                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
-                    />
+                    {isMultiDay ? (
+                      <input
+                        type='text'
+                        readOnly
+                        value={checkOutText}
+                        className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-green-50 text-sm font-semibold text-green-700 shadow-sm cursor-not-allowed'
+                      />
+                    ) : (
+                      <>
+                        <input
+                          type='text'
+                          value={checkOutText}
+                          onChange={(e) => {
+                            const formatted = formatTimeInput(e.target.value)
+                            setCheckOutText(formatted)
+                            if (formatted.length === 5 && !isValidTime(formatted)) {
+                              setCheckOutError('Format waktu tidak valid (HH:MM, 00:00 - 23:59)')
+                            } else {
+                              setCheckOutError('')
+                            }
+                          }}
+                          onBlur={() => {
+                            if (checkOutText && !isValidTime(checkOutText)) {
+                              setCheckOutError('Format waktu tidak valid (HH:MM, 00:00 - 23:59)')
+                            }
+                          }}
+                          placeholder='Contoh: 12:00'
+                          maxLength={5}
+                          className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:border-transparent hover:border-gray-400 ${
+                            checkOutError
+                              ? 'border-red-400 bg-red-50 text-red-700 focus:ring-red-300'
+                              : 'border-gray-200 bg-gray-50 text-gray-700 focus:ring-[#0F172A]'
+                          }`}
+                        />
+                        {checkOutError && (
+                          <span className='text-xs text-red-500 mt-1 pl-1'>{checkOutError}</span>
+                        )}
+                        {startDate && !checkOutError && checkOutText && (
+                          <span className='text-xs text-gray-400 mt-1 pl-1'>
+                            → {checkOutText} ({startDate.toLocaleDateString('id-ID')})
+                          </span>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -545,13 +684,23 @@ export default function InputReservasiPage() {
                 <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
                   Note Pelunasan
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
-                  <input
+                <div className='mt-2'>
+                  <SearchableSelect
                     value={notePelunasan}
-                    onChange={(e) => setNotePelunasan(e.target.value)}
-                    type='text'
-                    placeholder='Masukkan note pelunasan'
-                    className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
+                    onChange={(val: string) => setNotePelunasan(val)}
+                    options={[
+                      { value: 'FULL CASH', label: 'FULL CASH' },
+                      { value: 'PELUNASAN CASH', label: 'PELUNASAN CASH' },
+                      { value: 'FULL TRANSFER', label: 'FULL TRANSFER' },
+                      { value: 'QRIS EDC', label: 'QRIS EDC' },
+                      { value: 'PELUNASAN QRIS EDC', label: 'PELUNASAN QRIS EDC' },
+                      { value: 'PELUNASAN CASH', label: 'PELUNASAN CASH' },
+                      { value: 'PELUNASAN DEBIT EDC ', label: 'PELUNASAN DEBIT EDC' },
+                      { value: 'FULL EDC', label: 'FULL EDC' },
+                      { value: 'SISA PELUNASAN', label: 'SISA PELUNASAN' },
+                      { value: 'ZUZU', label: 'ZUZU' },
+                      { value: 'AGODA', label: 'AGODA' },
+                    ]}
                   />
                 </div>
               </div>
@@ -573,13 +722,14 @@ export default function InputReservasiPage() {
                 <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
                   Apart
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
-                  <input
+                <div className='mt-2'>
+                  <SearchableSelect
                     value={apart}
-                    onChange={(e) => setApart(e.target.value)}
-                    type='text'
-                    placeholder='Masukkan apart'
-                    className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
+                    onChange={(val: string) => setApart(val)}
+                    options={[
+                      { value: 'JARDIN', label: 'JARDIN' },
+                      { value: 'GAA', label: 'GAA' },
+                    ]}
                   />
                 </div>
               </div>
@@ -595,6 +745,36 @@ export default function InputReservasiPage() {
           </div>
         </div>
       </div>
+
+      {showInvoiceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4 text-center transform transition-all">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+              <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Reservasi Berhasil!</h3>
+            <p className="text-gray-500 mb-8 text-sm">
+              Data reservasi telah tersimpan. Apakah Anda ingin mencetak invoice sekarang?
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => router.push(`/invoice/${newInvoiceId}`)}
+                className="w-full bg-[#0B6AA9] text-white rounded-xl py-3 font-semibold hover:bg-[#09578b] transition-colors"
+              >
+                Ya, Print Invoice
+              </button>
+              <button
+                onClick={() => router.push('/room-status')}
+                className="w-full bg-gray-100 text-gray-700 rounded-xl py-3 font-semibold hover:bg-gray-200 transition-colors"
+              >
+                Tidak, Lanjut ke Room Status
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

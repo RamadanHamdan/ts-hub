@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server'
 import { connectDB } from '@/lib/mongoose'
 import { InputDatabase } from '@/models/InputDatabase'
+import { RoomStatusSnapshot } from '@/models/RoomStatusSnapshot'
 
 type ReservasiItem = {
   id: number
@@ -66,6 +67,34 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       )
     }
+
+    // ✅ Auto-create RoomStatusSnapshot with status_book derived from durasi
+    const snapshotDocs = result.map((doc) => {
+      const durasi = (doc.data_durasi || '').toLowerCase()
+      let autoStatusBook = ''
+      let autoStatusUnit = ''
+
+      if (durasi.includes('malam')) {
+        autoStatusBook = 'SOLD'
+        autoStatusUnit = 'BELUM CHECK IN'
+      } else if (durasi.includes('transit')) {
+        // autoStatusBook = 'BOOKED'
+        autoStatusUnit = 'BELUM CHECK IN'
+      }
+
+      return {
+        input_db_id: doc._id.toString(),
+        tanggal_reservasi: doc.tanggal_reservasi,
+        nama_unit: doc.nama_unit,
+        status_unit: autoStatusUnit,
+        status_book: autoStatusBook,
+        jam_ready: '',
+        keterangan: '',
+        updated_at: new Date(),
+      }
+    })
+
+    await RoomStatusSnapshot.insertMany(snapshotDocs)
 
     // Build insertedIds map similar to native driver response
     const insertedIds: Record<number, string> = {}

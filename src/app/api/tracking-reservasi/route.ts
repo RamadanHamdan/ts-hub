@@ -86,11 +86,41 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // Durasi filter
+    // Durasi filter - normalize "Fullday" to match all "X Malam" patterns (except "Halfday Malam")
     if (durasiFilter) {
       const durations = durasiFilter.split(',').map((d) => d.trim()).filter(Boolean)
       if (durations.length > 0) {
-        filter.data_durasi = { $in: durations }
+        const durasiConditions: any[] = []
+        const exactMatches: string[] = []
+
+        for (const d of durations) {
+          if (d.toLowerCase() === 'fullday') {
+            // "Fullday" matches any durasi containing "malam" EXCEPT "halfday malam"
+            durasiConditions.push({
+              $and: [
+                { data_durasi: { $regex: /malam/i } },
+                { data_durasi: { $not: { $regex: /halfday/i } } }
+              ]
+            })
+          } else {
+            exactMatches.push(d)
+          }
+        }
+
+        if (exactMatches.length > 0 && durasiConditions.length > 0) {
+          filter.$or = [
+            { data_durasi: { $in: exactMatches } },
+            ...durasiConditions
+          ]
+        } else if (exactMatches.length > 0) {
+          filter.data_durasi = { $in: exactMatches }
+        } else if (durasiConditions.length > 0) {
+          if (durasiConditions.length === 1) {
+            Object.assign(filter, durasiConditions[0])
+          } else {
+            filter.$or = durasiConditions
+          }
+        }
       }
     }
 
@@ -109,7 +139,20 @@ export async function GET(req: NextRequest) {
         .limit(statusUnitFilter ? 0 : limit)
         .lean(),
       InputDatabase.distinct('nama_unit'),
-      InputDatabase.distinct('data_durasi'),
+      InputDatabase.distinct('data_durasi').then((rawDurasi: string[]) => {
+        // Normalize durasi options: group "X Malam" (except "Halfday Malam") into "Fullday"
+        const normalized = new Set<string>()
+        for (const d of rawDurasi) {
+          if (!d) continue
+          const lower = d.toLowerCase()
+          if (lower.includes('malam') && !lower.includes('halfday')) {
+            normalized.add('Fullday')
+          } else {
+            normalized.add(d)
+          }
+        }
+        return Array.from(normalized)
+      }),
       InputDatabase.distinct('tanggal_reservasi'),
       InputDatabase.aggregate([
         { $match: filter },
@@ -121,24 +164,66 @@ export async function GET(req: NextRequest) {
         },
       ]),
       (() => {
-        const sumDate = searchParams.get('sumDate')
+        const sumMonth = searchParams.get('sumMonth')
+        const sumYear = searchParams.get('sumYear')
+        const sumUnit = searchParams.get('sumUnit')
+        const calStartDate = searchParams.get('calStartDate')
+        const calEndDate = searchParams.get('calEndDate')
+        
         let summaryFilter: any = {}
-        if (sumDate) {
-          const [y, m, d] = sumDate.split('-')
-          const padded = `${d}/${m}/${y}`
-          const unpadded = `${parseInt(d, 10)}/${parseInt(m, 10)}/${y}`
-          summaryFilter.tanggal_reservasi = { $in: [padded, unpadded] }
+        
+        if (sumUnit && sumUnit !== 'ALL') {
+          summaryFilter.nama_unit = sumUnit
+        }
+
+        if (calStartDate && calEndDate) {
+          const calStartObj = new Date(calStartDate);
+          const thirtyDaysAgo = new Date(calStartObj);
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 31);
+          
+          summaryFilter.$expr = { $and: [] }
+          summaryFilter.$expr.$and.push({
+            $gte: [
+              { $dateFromString: { dateString: "$tanggal_reservasi", format: "%d/%m/%Y", onError: null } },
+              thirtyDaysAgo
+            ]
+          })
+          summaryFilter.$expr.$and.push({
+            $lte: [
+              { $dateFromString: { dateString: "$tanggal_reservasi", format: "%d/%m/%Y", onError: null } },
+              new Date(`${calEndDate}T23:59:59.999Z`)
+            ]
+          })
+        } else if (sumMonth && sumYear) {
+          const padStr = (n: number | string) => n.toString().padStart(2, '0')
+          summaryFilter.tanggal_reservasi = { $regex: new RegExp(`^\\d{1,2}/0?${parseInt(sumMonth, 10)}/${sumYear}$`) }
         } else {
+          // If no month provided, default to baseFilter but calendar usually provides it
           summaryFilter = { ...baseFilter }
         }
         return RoomStatusSnapshot.aggregate([
           { $match: summaryFilter },
+          {
+            $lookup: {
+              from: 'input_database',
+              let: { dbId: { $toObjectId: '$input_db_id' } },
+              pipeline: [
+                { $match: { $expr: { $eq: ['$_id', '$$dbId'] } } },
+                { $project: { data_durasi: 1, check_out: 1 } }
+              ],
+              as: 'inputDoc'
+            }
+          },
+          { $unwind: { path: '$inputDoc', preserveNullAndEmptyArrays: true } },
           { 
             $group: { 
               _id: { 
                 tanggal: '$tanggal_reservasi', 
                 unit: '$nama_unit', 
-                status: { $toUpper: '$status_unit' } 
+                status: { $toUpper: '$status_unit' },
+                status_book: { $toUpper: { $ifNull: ['$status_book', ''] } },
+                durasi: { $toLower: { $ifNull: ['$inputDoc.data_durasi', ''] } },
+                check_out: { $ifNull: ['$inputDoc.check_out', ''] }
               }, 
               count: { $sum: 1 } 
             } 
@@ -204,30 +289,49 @@ export async function GET(req: NextRequest) {
     const pendapatanByUnitMap: Record<string, number> = {}
     let totalPendapatan = 0
 
-    const pendapatanByCategoryArr = statsResult
-      .map((item: { _id: { unit: string; durasi: string }; total: number }) => {
-        const unit = item._id.unit || 'Unknown'
-        const durasi = item._id.durasi || 'Unknown'
-        const itemTotal = item.total || 0
+    // Normalize durasi for category: "X Malam" (except "Halfday Malam") → "Fullday"
+    const categoryMap = new Map<string, { unit: string; durasi: string; total: number }>()
+    statsResult.forEach((item: { _id: { unit: string; durasi: string }; total: number }) => {
+      const unit = item._id.unit || 'Unknown'
+      const rawDurasi = item._id.durasi || 'Unknown'
+      const itemTotal = item.total || 0
 
-        pendapatanByUnitMap[unit] = (pendapatanByUnitMap[unit] || 0) + itemTotal
-        totalPendapatan += itemTotal
+      // Normalize: if contains "malam" but not "halfday" → "Fullday"
+      const lower = rawDurasi.toLowerCase()
+      const normalizedDurasi = (lower.includes('malam') && !lower.includes('halfday'))
+        ? 'Fullday'
+        : rawDurasi
 
-        return { unit, durasi, total: itemTotal }
-      })
+      pendapatanByUnitMap[unit] = (pendapatanByUnitMap[unit] || 0) + itemTotal
+      totalPendapatan += itemTotal
+
+      // Merge entries with the same unit + normalized durasi
+      const key = `${unit}|||${normalizedDurasi}`
+      const existing = categoryMap.get(key)
+      if (existing) {
+        existing.total += itemTotal
+      } else {
+        categoryMap.set(key, { unit, durasi: normalizedDurasi, total: itemTotal })
+      }
+    })
+
+    const pendapatanByCategoryArr = Array.from(categoryMap.values())
       .sort((a: { total: number }, b: { total: number }) => b.total - a.total)
 
     const pendapatanByUnitArr = Object.entries(pendapatanByUnitMap)
       .map(([unit, total]) => ({ unit, total }))
       .sort((a, b) => b.total - a.total)
 
-    const statusSummary: Array<{ tanggal: string, unit: string, status: string, total: number }> = []
+    const statusSummary: Array<{ tanggal: string, unit: string, status: string, status_book: string, durasi: string, check_out: string, total: number }> = []
     statusCountsAgg.forEach((item: any) => {
-      if (item._id && item._id.status) {
+      if (item._id) {
         statusSummary.push({
           tanggal: item._id.tanggal || '-',
           unit: item._id.unit || '-',
-          status: item._id.status,
+          status: item._id.status || '',
+          status_book: item._id.status_book || '',
+          durasi: item._id.durasi || '',
+          check_out: item._id.check_out || '',
           total: item.count || 1
         })
       }
