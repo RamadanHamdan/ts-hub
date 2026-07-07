@@ -63,7 +63,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-200 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-200 dark:bg-gray-900 px-4">
       {/* Container relatif untuk efek overlap */}
       <div className="relative flex items-center" style={{ width: "700px", height: "420px" }}>
 
@@ -102,7 +102,7 @@ export default function LoginPage() {
 
         {/* Form Putih - overlap ke panel biru */}
         <div
-          className="absolute left-0 bg-white rounded-2xl flex flex-col justify-center"
+          className="absolute left-0 bg-white dark:bg-gray-800 rounded-2xl flex flex-col justify-center"
           style={{
             width: "50%",
             height: "380px",
@@ -111,11 +111,11 @@ export default function LoginPage() {
             zIndex: 2,
           }}
         >
-          <h2 className="text-base font-bold text-gray-700 text-center mb-5">Login please</h2>
+          <h2 className="text-base font-bold text-gray-700 dark:text-white text-center mb-5">Login please</h2>
 
           <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
             {/* Input Email/Username */}
-            <div className="mb-3 flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
+            <div className="mb-3 flex items-center border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
               <svg className="w-4 h-4 text-gray-400 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
               </svg>
@@ -123,14 +123,14 @@ export default function LoginPage() {
                 type="text"
                 value={identity}
                 onChange={(e) => setIdentity(e.target.value)}
-                className="w-full text-sm outline-none text-gray-700 placeholder-gray-300"
+                className="w-full text-sm outline-none text-gray-700 dark:text-white placeholder-gray-300 bg-transparent"
                 placeholder="Input your ID or Email"
                 required
               />
             </div>
 
             {/* Input Password */}
-            <div className="mb-4 flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
+            <div className="mb-4 flex items-center border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-blue-400">
               <svg className="w-4 h-4 text-gray-400 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
@@ -138,7 +138,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full text-sm outline-none text-gray-700 placeholder-gray-300"
+                className="w-full text-sm outline-none text-gray-700 dark:text-white placeholder-gray-300 bg-transparent"
                 placeholder="Input your password"
                 required
               />
@@ -146,7 +146,7 @@ export default function LoginPage() {
 
             {/* Remember me + Forgot */}
             <div className="flex items-center justify-between mb-5">
-              <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer">
                 <input type="checkbox" className="accent-blue-600" />
                 Remember me
               </label>
@@ -156,7 +156,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <div className="mb-3 p-2 bg-red-50 text-red-500 text-xs rounded-md border border-red-100">
+              <div className="mb-3 p-2 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 text-xs rounded-md border border-red-100 dark:border-red-800/50">
                 {error}
               </div>
             )}

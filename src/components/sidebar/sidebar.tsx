@@ -8,6 +8,7 @@ import { getMenuByRole } from '@/lib/menu'
 import { useSession } from '@/components/session/SessionProvider'
 import * as Icons from 'lucide-react'
 import { Menu, X, ChevronUp } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme/ThemeToggle'
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -406,11 +407,12 @@ export default function Sidebar() {
           </div>
 
           {/* LOGOUT */}
-          <div className='p-3'>
+          <div className='p-3 flex gap-2'>
+            <ThemeToggle className="!w-12 !h-12 flex-shrink-0" />
             <button
               type='button'
               onClick={onLogout}
-              className='flex items-center justify-center h-12 w-full rounded-xl bg-white/10 text-white hover:bg-white hover:text-blue-900 dark:hover:text-[#0d1f3c] active:bg-white/20 transition-all duration-200 group/logout'
+              className='flex flex-1 items-center justify-center h-12 rounded-xl bg-white/10 text-white hover:bg-white hover:text-blue-900 dark:hover:text-[#0d1f3c] active:bg-white/20 transition-all duration-200 group/logout'
             >
               <div className='flex-shrink-0 w-12 h-12 flex items-center justify-center group-hover/logout:text-blue-900'>
                 <Icons.LogOut className='w-5 h-5' />

@@ -288,9 +288,9 @@ export default function InputReservasiPage() {
     <div className='min-h-screen'>
       <div className='flex'>
         <div className='flex-1 p-6'>
-          <div className='bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100'>
+          <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-100 dark:border-gray-700'>
             <div className='flex flex-col'>
-              <h1 className='text-2xl pl-4 font-extrabold text-black drop-shadow-sm'>
+              <h1 className='text-2xl pl-4 font-extrabold text-gray-900 dark:text-white drop-shadow-sm'>
                 Panel Admin
               </h1>
               <div className='text-sm ml-4 mt-2 text-slate-500 font-medium'>
@@ -304,24 +304,24 @@ export default function InputReservasiPage() {
               </button>
             </div>
           </div>
-          <section className='mt-4 rounded-xl bg-white p-8 shadow-sm ring-1 ring-black/5'>
+          <section className='mt-4 rounded-xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-black/5 dark:ring-white/10'>
             <div className='flex items-center gap-3 mb-6'>
               <Building
                 className='text-white bg-[#0F172A] rounded-2xl p-1 px-2'
                 size={38}
               />
               <div className='flex flex-col'>
-                <h2 className='text-sm font-semibold text-gray-900'>
+                <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>
                   Informasi Tamu Reservasi
                 </h2>
-                <p className='text-sm text-gray-500'>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>
                   Data Tamu, Unit, Duration, Tanggal dan Checkin & Checkout
                 </p>
               </div>
             </div>
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               <div>
-                <label className='text-sm font-semibold text-blue-[#0F172A]'>
+                <label className='text-sm font-semibold text-gray-900 dark:text-gray-200'>
                   NAMA ADMIN
                 </label>
                 <div className='mt-2'>
@@ -330,12 +330,12 @@ export default function InputReservasiPage() {
                     value={namaAdmin}
                     onChange={(e) => setNamaAdmin(e.target.value)}
                     placeholder="Nama Admin"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400 dark:hover:border-gray-500"
                   />
                 </div>
               </div>
               <div>
-                <label className='text-sm font-semibold text-blue-[#0F172A]'>
+                <label className='text-sm font-semibold text-gray-900 dark:text-gray-200'>
                   Tanggal Reservasi
                 </label>
                 <div className='mt-2'>
@@ -348,12 +348,12 @@ export default function InputReservasiPage() {
                     placeholderText='Pilih rentang tanggal'
                     wrapperClassName='w-full'
                     minDate={new Date()}
-                    className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm font-medium text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#0F172A] focus:border-transparent hover:border-gray-400 cursor-pointer'
+                    className='w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent hover:border-gray-400 dark:hover:border-gray-500 cursor-pointer'
                   />
                 </div>
               </div>
               <div>
-                <label className='text-sm font-semibold text-blue-[#0F172A]'>
+                <label className='text-sm font-semibold text-gray-900 dark:text-gray-200'>
                   UNIT
                 </label>
                 <div className='mt-2'>
@@ -368,7 +368,7 @@ export default function InputReservasiPage() {
                 </div>
               </div>
               <div>
-                <label className='text-sm font-semibold text-blue-[#0F172A]'>
+                <label className='text-sm font-semibold text-gray-900 dark:text-gray-200'>
                   DURATION
                 </label>
                 <div className='mt-2'>
@@ -377,7 +377,7 @@ export default function InputReservasiPage() {
                       type='text'
                       readOnly
                       value={dataDuration}
-                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-green-50 text-sm font-semibold text-green-700 shadow-sm cursor-not-allowed'
+                      className='w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-green-50 dark:bg-green-900/30 text-sm font-semibold text-green-700 dark:text-green-400 shadow-sm cursor-not-allowed'
                     />
                   ) : (
                     <SearchableSelect
@@ -415,7 +415,7 @@ export default function InputReservasiPage() {
                         type='text'
                         readOnly
                         value={checkInText}
-                        className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-green-50 text-sm font-semibold text-green-700 shadow-sm cursor-not-allowed'
+                        className='w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-green-50 dark:bg-green-900/30 text-sm font-semibold text-green-700 dark:text-green-400 shadow-sm cursor-not-allowed'
                       />
                     ) : (
                       <>
@@ -441,7 +441,7 @@ export default function InputReservasiPage() {
                           className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:border-transparent hover:border-gray-400 ${
                             checkInError
                               ? 'border-red-400 bg-red-50 text-red-700 focus:ring-red-300'
-                              : 'border-gray-200 bg-gray-50 text-gray-700 focus:ring-[#0F172A]'
+                              : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-white focus:ring-blue-500'
                           }`}
                         />
                         {checkInError && (
@@ -474,7 +474,7 @@ export default function InputReservasiPage() {
                         type='text'
                         readOnly
                         value={checkOutText}
-                        className='w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-green-50 text-sm font-semibold text-green-700 shadow-sm cursor-not-allowed'
+                        className='w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-green-50 dark:bg-green-900/30 text-sm font-semibold text-green-700 dark:text-green-400 shadow-sm cursor-not-allowed'
                       />
                     ) : (
                       <>
@@ -500,7 +500,7 @@ export default function InputReservasiPage() {
                           className={`w-full px-4 py-2.5 rounded-xl border text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:border-transparent hover:border-gray-400 ${
                             checkOutError
                               ? 'border-red-400 bg-red-50 text-red-700 focus:ring-red-300'
-                              : 'border-gray-200 bg-gray-50 text-gray-700 focus:ring-[#0F172A]'
+                              : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-white focus:ring-blue-500'
                           }`}
                         />
                         {checkOutError && (
@@ -518,41 +518,41 @@ export default function InputReservasiPage() {
               </div>
             </div>
           </section>
-          <section className='mt-4 rounded-xl bg-white p-8 shadow-sm ring-1 ring-black/5'>
+          <section className='mt-4 rounded-xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-black/5 dark:ring-white/10'>
             <div className='flex items-center gap-3 mb-6'>
               <UserIcon
                 className='text-white bg-[#0F172A] rounded-2xl p-1 px-2'
                 size={38}
               />
               <div className='flex flex-col'>
-                <h2 className='text-sm font-semibold text-gray-900'>
+                <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>
                   Informasi Tamu
                 </h2>
-                <p className='text-sm text-gray-500'>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>
                   Informasi harga unit, uang masuk, sisa pembayaran
                 </p>
               </div>
             </div>
             <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
               <div>
-                <label className='text-sm font-semibold text-blue-[#0F172A]'>
+                <label className='text-sm font-semibold text-gray-900 dark:text-gray-200'>
                   NAMA TAMU
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
+                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 dark:ring-gray-600 rounded-xl px-4 dark:text-white'>
                   <input
                     value={namaTamu}
                     onChange={(e) => setNamaTamu(e.target.value)}
                     type='text'
                     placeholder='Masukkan nama tamu'
-                    className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
+                    className='text-gray-900 dark:text-white bg-transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
                   />
                 </div>
               </div>
               <div className='relative'>
-                <label className='text-sm font-semibold text-blue-[#0F172A]'>
+                <label className='text-sm font-semibold text-gray-900 dark:text-gray-200'>
                   NOMOR TELEPON TAMU
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
+                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 dark:ring-gray-600 rounded-xl px-4 dark:text-white'>
                   <input
                     value={noTelp}
                     onChange={(e) => { setNoTelp(e.target.value) }}
@@ -565,7 +565,7 @@ export default function InputReservasiPage() {
                     type='text'
                     maxLength={15}
                     placeholder='Masukkan nomor telepon tamu'
-                    className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent bg-transparent'
+                    className='text-gray-900 dark:text-white bg-transparent w-full focus:outline-none focus:ring-0 focus:border-transparent bg-transparent'
                   />
                 </div>
                 {showPhoneSuggestions && phoneSuggestions.length > 0 && (
@@ -590,27 +590,27 @@ export default function InputReservasiPage() {
               </div>
             </div>
           </section>
-          <section className='mt-4 rounded-xl bg-white p-8 shadow-sm ring-1 ring-black/5'>
+          <section className='mt-4 rounded-xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-black/5 dark:ring-white/10'>
             <div className='flex items-center gap-3 mb-6'>
               <DollarSign
                 className='text-white bg-[#0F172A] rounded-2xl p-1 px-2'
                 size={38}
               />
               <div className='flex flex-col'>
-                <h2 className='text-sm font-semibold text-gray-900'>
+                <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>
                   Form Harga
                 </h2>
-                <p className='text-sm text-gray-500'>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>
                   Informasi harga unit, uang masuk, sisa pembayaran
                 </p>
               </div>
             </div>
             <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
               <div>
-                <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
+                <label className='text-large font-semibold uppercase text-gray-900 dark:text-gray-200'>
                   Harga Unit
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
+                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 dark:ring-gray-600 rounded-xl px-4 dark:text-white'>
                   <input
                     value={dataHarga ? formatRupiah(dataHarga) : ''}
                     onChange={(e) => setDataHarga(parseRupiah(e.target.value))}
@@ -633,10 +633,10 @@ export default function InputReservasiPage() {
                 </div>
               </div>
               <div>
-                <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
+                <label className='text-large font-semibold uppercase text-gray-900 dark:text-gray-200'>
                   Uang Masuk
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
+                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 dark:ring-gray-600 rounded-xl px-4 dark:text-white'>
                   <input
                     value={uangMasuk ? formatRupiah(uangMasuk) : ''}
                     onChange={(e) => setUangMasuk(parseRupiah(e.target.value))}
@@ -648,40 +648,40 @@ export default function InputReservasiPage() {
                 </div>
               </div>
               <div>
-                <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
+                <label className='text-large font-semibold uppercase text-gray-900 dark:text-gray-200'>
                   Sisa Pembayaran
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
+                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 dark:ring-gray-600 rounded-xl px-4 dark:text-white'>
                   <input
                     readOnly
                     value={formatRupiah(sisaPembayaran ?? 0)}
                     type='text'
                     inputMode='numeric'
                     placeholder='Rp 0'
-                    className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
+                    className='text-gray-900 dark:text-white bg-transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
                   />
                 </div>
               </div>
             </div>
           </section>
-          <section className='mt-4 rounded-xl bg-white p-8 shadow-sm ring-1 ring-black/5'>
+          <section className='mt-4 rounded-xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-black/5 dark:ring-white/10'>
             <div className='flex items-center gap-3 mb-6'>
               <UserIcon
                 className='text-white bg-[#0F172A] rounded-2xl p-1 px-2'
                 size={38}
               />
               <div className='flex flex-col'>
-                <h2 className='text-sm font-semibold text-gray-900'>
+                <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>
                   Form Note Admin
                 </h2>
-                <p className='text-sm text-gray-500'>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>
                   Informasi Note Admin, Note Pelunasan, Note Pembatalan, dll
                 </p>
               </div>
             </div>
             <div className='grid grid-cols-1 gap-3 md:grid-cols-3'>
               <div>
-                <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
+                <label className='text-large font-semibold uppercase text-gray-900 dark:text-gray-200'>
                   Note Pelunasan
                 </label>
                 <div className='mt-2'>
@@ -705,21 +705,21 @@ export default function InputReservasiPage() {
                 </div>
               </div>
               <div>
-                <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
+                <label className='text-large font-semibold uppercase text-gray-900 dark:text-gray-200'>
                   Note Tamu / Admin
                 </label>
-                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 rounded-xl px-4'>
+                <div className='mt-2 h-12 ring-2 py-2.5 ring-gray-200 dark:ring-gray-600 rounded-xl px-4 dark:text-white'>
                   <input
                     value={noteTamu}
                     onChange={(e) => setNoteTamu(e.target.value)}
                     type='text'
                     placeholder='Masukkan note tamu atau admin'
-                    className='transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
+                    className='text-gray-900 dark:text-white bg-transparent w-full focus:outline-none focus:ring-0 focus:border-transparent'
                   />
                 </div>
               </div>
               <div>
-                <label className='text-large font-semibold uppercase text-blue-[#0F172A]'>
+                <label className='text-large font-semibold uppercase text-gray-900 dark:text-gray-200'>
                   Apart
                 </label>
                 <div className='mt-2'>
@@ -748,13 +748,13 @@ export default function InputReservasiPage() {
 
       {showInvoiceModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4 text-center transform transition-all">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4 text-center transform transition-all">
             <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
               <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Reservasi Berhasil!</h3>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Reservasi Berhasil!</h3>
             <p className="text-gray-500 mb-8 text-sm">
               Data reservasi telah tersimpan. Apakah Anda ingin mencetak invoice sekarang?
             </p>

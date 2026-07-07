@@ -124,6 +124,13 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    // Phone filter (last 4 digits)
+    const phoneFilter = searchParams.get('phone') || ''
+    if (phoneFilter) {
+      // Match documents where nomor_telp_tamu ends with the given digits
+      filter.nomor_telp_tamu = { $regex: new RegExp(`${phoneFilter.replace(/\D/g, '')}$`) }
+    }
+
     const skip = (page - 1) * limit
     const statusUnitFilter = searchParams.get('statusUnit') || ''
 

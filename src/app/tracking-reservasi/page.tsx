@@ -110,7 +110,7 @@ function DetailItem({
             {value}
           </a>
         ) : (
-          <span className='text-[10.5px] text-slate-700 font-medium'>
+          <span className='text-[10.5px] text-slate-700 dark:text-slate-200 font-medium'>
             {value || '-'}
           </span>
         )}
@@ -320,12 +320,12 @@ export default function TrackingReservasiPage() {
       <div className='flex'>
         <div className='flex-1 p-6'>
           {/* Page Header */}
-          <div className='bg-white rounded-xl shadow-md p-6 mb-6 border border-gray-100'>
+          <div className='bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6 border border-gray-100 dark:border-gray-700'>
             <div className='flex flex-col'>
-              <h1 className='text-2xl pl-4 font-extrabold text-black drop-shadow-sm'>
+              <h1 className='text-2xl pl-4 font-extrabold text-black dark:text-white drop-shadow-sm'>
                 Tracking Reservasi
               </h1>
-              <div className='text-sm ml-4 mt-2 text-slate-500 font-medium'>
+              <div className='text-sm ml-4 mt-2 text-slate-500 dark:text-slate-400 font-medium'>
                 Dashboard Reservasi
               </div>
             </div>
@@ -334,9 +334,9 @@ export default function TrackingReservasiPage() {
           {/* ═══════════════════════════════════
               SECTION 1: FILTER DATA TRACKING
              ═══════════════════════════════════ */}
-          <section className='bg-white rounded-xl shadow-sm border border-gray-200'>
+          <section className='bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700'>
             {/* Header */}
-            <div className='bg-[#0d1f3c] text-white px-3 sm:px-5 h-10 flex items-center justify-between rounded-t-xl gap-2'>
+            <div className='bg-[#0d1f3c] dark:bg-gray-900 text-white px-3 sm:px-5 h-10 flex items-center justify-between rounded-t-xl gap-2'>
               <div className='flex items-center gap-1.5 sm:gap-2 min-w-0'>
                 <Filter
                   size={13}
@@ -351,7 +351,7 @@ export default function TrackingReservasiPage() {
                 </span>
               </div>
               <button
-                className='bg-white text-blue-600 p-1 rounded hover:bg-blue-50 transition-colors cursor-pointer shadow-sm shrink-0'
+                className='bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 p-1 rounded hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer shadow-sm shrink-0'
                 aria-label={isFilterOpen ? 'Tutup filter' : 'Buka filter'}
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
               >
@@ -381,7 +381,7 @@ export default function TrackingReservasiPage() {
                 <div className='flex items-center gap-2 w-full sm:w-auto'>
                   <input
                     type='date'
-                    className='flex-1 sm:flex-none sm:w-30 text-xs h-8 px-2 border border-slate-300 rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400'
+                    className='flex-1 sm:flex-none sm:w-30 text-xs h-8 px-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-slate-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400'
                     placeholder='mm/dd/yyyy'
                     value={startDate}
                     onChange={(e) => {
@@ -393,7 +393,7 @@ export default function TrackingReservasiPage() {
                   <span className='text-gray-400 font-semibold'>-</span>
                   <input
                     type='date'
-                    className='flex-1 sm:flex-none sm:w-30 text-xs h-8 px-2 border border-slate-300 rounded-lg bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400'
+                    className='flex-1 sm:flex-none sm:w-30 text-xs h-8 px-2 border border-slate-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-slate-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400'
                     placeholder='mm/dd/yyyy'
                     value={endDate}
                     onChange={(e) => {
@@ -434,7 +434,7 @@ export default function TrackingReservasiPage() {
                           'flex items-center gap-1.5 px-3 py-[6px] text-[11px] font-semibold rounded-lg cursor-pointer transition-all duration-150',
                           isActive
                             ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
-                            : 'border border-slate-300 bg-white text-gray-600 hover:border-blue-400 hover:text-blue-600',
+                            : 'border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-200 hover:border-blue-400 hover:text-blue-600',
                         )}
                       >
                         <PIcon size={12} strokeWidth={2} />
@@ -469,10 +469,10 @@ export default function TrackingReservasiPage() {
                         type='button'
                         onClick={() => setOpenDropdown(isOpen ? null : btn.id)}
                         className={`w-full flex items-center justify-between gap-1 py-[7px] px-3 text-[11px] font-semibold rounded-lg cursor-pointer ${isOpen
-                          ? 'border-2 border-blue-500 bg-white text-blue-600 shadow-md'
+                          ? 'border-2 border-blue-500 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-md'
                           : isActive
-                            ? 'border-2 border-blue-400 bg-white text-blue-700'
-                            : 'border border-slate-300 bg-white text-gray-600 hover:border-blue-400 hover:text-blue-600'
+                            ? 'border-2 border-blue-400 bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-300'
+                            : 'border border-slate-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-200 hover:border-blue-400 hover:text-blue-600'
                           }`}
                       >
                         <span className='flex items-center gap-1.5 min-w-0'>
@@ -556,7 +556,7 @@ export default function TrackingReservasiPage() {
                                 return (
                                   <label
                                     key={opt}
-                                    className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-blue-50 ${checked ? 'bg-blue-50/60' : ''}`}
+                                    className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 ${checked ? 'bg-blue-50/60' : ''}`}
                                   >
                                     <input
                                       type='checkbox'
@@ -632,7 +632,7 @@ export default function TrackingReservasiPage() {
               SECTION 2: TRACKING UNIT (STATS)
              ═══════════════════════════════════ */}
           <section className='bg-white mt-4 rounded-xl shadow-sm border border-gray-200 overflow-hidden'>
-            <div className='bg-[#1E3B62] text-white px-3 sm:px-6 h-10 flex items-center justify-between gap-2'>
+            <div className='bg-[#1E3B62] dark:bg-gray-900 text-white px-3 sm:px-6 h-10 flex items-center justify-between gap-2'>
               <div className='flex items-center min-w-0'>
                 <BarChart2
                   size={12}
@@ -647,7 +647,7 @@ export default function TrackingReservasiPage() {
                 </span>
               </div>
               <button
-                className='bg-white text-blue-600 p-1 rounded hover:bg-slate-50 transition-colors shadow-sm cursor-pointer shrink-0'
+                className='bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 p-1 rounded hover:bg-slate-50 dark:hover:bg-gray-700 transition-colors shadow-sm cursor-pointer shrink-0'
                 aria-label={isFilterOpen2 ? 'Tutup filter' : 'Buka filter'}
                 onClick={() => setIsFilterOpen2(!isFilterOpen2)}
               >
@@ -669,7 +669,7 @@ export default function TrackingReservasiPage() {
               <div className='flex flex-col sm:flex-row gap-3 w-full'>
                 {/* Card: Total Pendapatan By Unit */}
                 <div className='w-full md:w-full'>
-                  <div className='flex flex-col border-0 h-full border-l-4 border-l-[#0d1f3c] bg-[#f8fbff] rounded-lg shadow-sm'>
+                  <div className='flex flex-col border-0 h-full border-l-4 border-l-[#0d1f3c] bg-[#f8fbff] dark:bg-gray-800 rounded-lg shadow-sm'>
                     <div className='py-2 px-3 flex flex-col justify-between'>
                       <div className='flex items-center justify-between'>
                         <div className='flex items-center gap-2'>
@@ -677,7 +677,7 @@ export default function TrackingReservasiPage() {
                             <Building2 size={14} className='text-white' />
                           </div>
                           <div>
-                            <div className='font-bold text-[12px] text-[#1e293b]'>
+                            <div className='font-bold text-[12px] text-[#1e293b] dark:text-slate-200'>
                               Pendapatan By Unit
                             </div>
                             <div className='text-[10px] text-slate-500'>
@@ -710,7 +710,7 @@ export default function TrackingReservasiPage() {
 
                 {/* Card: Total Pendapatan By Category */}
                 <div className='w-full md:w-full'>
-                  <div className='flex flex-col border-0 h-full border-l-4 border-l-[#0d1f3c] bg-[#f0f1fd] rounded-lg shadow-sm'>
+                  <div className='flex flex-col border-0 h-full border-l-4 border-l-[#0d1f3c] bg-[#f0f1fd] dark:bg-gray-800 rounded-lg shadow-sm'>
                     <div className='py-2 px-3 flex flex-col justify-between'>
                       <div className='flex items-center justify-between'>
                         <div className='flex items-center gap-2'>
@@ -722,7 +722,7 @@ export default function TrackingReservasiPage() {
                             />
                           </div>
                           <div>
-                            <div className='font-bold text-[12px] text-[#1e293b]'>
+                            <div className='font-bold text-[12px] text-[#1e293b] dark:text-slate-200'>
                               Pendapatan By Category
                             </div>
                             <div className='text-[10px] text-slate-500'>
@@ -784,7 +784,7 @@ export default function TrackingReservasiPage() {
                       className='text-blue-600 shrink-0'
                       strokeWidth={2.5}
                     />
-                    <span className='text-[11px] font-bold text-[#1e293b]'>
+                    <span className='text-[11px] font-bold text-[#1e293b] dark:text-slate-200'>
                       Data Unit By Pendapatan
                     </span>
                   </div>
@@ -797,20 +797,20 @@ export default function TrackingReservasiPage() {
                 </div>
                 <div className='max-h-[230px] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-blue-50 [&::-webkit-scrollbar-thumb]:bg-blue-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-blue-400'>
                   <table className='w-full text-center border-collapse'>
-                    <thead className='sticky top-0 z-10 bg-[#f1f5f9]'>
+                    <thead className='sticky top-0 z-10 bg-[#f1f5f9] dark:bg-gray-800'>
                       <tr>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           No
                         </th>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           Unit
                         </th>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           Pendapatan
                         </th>
                       </tr>
                     </thead>
-                    <tbody className='divide-y divide-gray-100'>
+                    <tbody className='divide-y divide-gray-100 dark:divide-gray-700'>
                       {loadingRows ? (
                         <tr>
                           <td
@@ -845,20 +845,20 @@ export default function TrackingReservasiPage() {
                               className={cn(
                                 'transition-colors cursor-pointer',
                                 unit.includes(item.unit)
-                                  ? 'bg-blue-100 ring-1 ring-inset ring-blue-400'
-                                  : 'hover:bg-blue-50/70',
+                                  ? 'bg-blue-100 dark:bg-blue-900/40 ring-1 ring-inset ring-blue-400'
+                                  : 'hover:bg-blue-50/70 dark:hover:bg-gray-800',
                               )}
                             >
-                              <td className='px-2 py-1.5 text-[10px] text-slate-400'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-400 dark:text-slate-500'>
                                 {index + 1}
                               </td>
-                              <td className='px-2 py-1.5 text-[10px] text-slate-700 font-medium'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-700 dark:text-slate-200 font-medium'>
                                 {item.unit}
                               </td>
-                              <td className='px-2 py-1.5 text-[10px] text-slate-600'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300'>
                                 <div className='flex items-center gap-1.5'>
                                   <span>{formatRupiah(item.total)}</span>
-                                  <div className='flex-1 min-w-[36px] bg-blue-100 rounded-full h-[4px] overflow-hidden'>
+                                  <div className='flex-1 min-w-[36px] bg-blue-100 dark:bg-gray-700 rounded-full h-[4px] overflow-hidden'>
                                     <div
                                       className='bg-blue-500 h-full rounded-full'
                                       style={{ width: `${pct}%` }}
@@ -890,7 +890,7 @@ export default function TrackingReservasiPage() {
                       className='text-green-600 shrink-0'
                       strokeWidth={2.5}
                     />
-                    <span className='text-[11px] font-bold text-[#1e293b]'>
+                    <span className='text-[11px] font-bold text-[#1e293b] dark:text-slate-200'>
                       Data Unit By Category (Durasi)
                     </span>
                   </div>
@@ -910,23 +910,23 @@ export default function TrackingReservasiPage() {
                 </div>
                 <div className='max-h-[230px] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-green-50 [&::-webkit-scrollbar-thumb]:bg-green-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-green-400'>
                   <table className='w-full text-center border-collapse'>
-                    <thead className='sticky top-0 z-10 bg-[#f1f5f9]'>
+                    <thead className='sticky top-0 z-10 bg-[#f1f5f9] dark:bg-gray-800'>
                       <tr>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           #
                         </th>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           Unit
                         </th>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           Durasi
                         </th>
-                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500'>
+                        <th className='px-2 py-1.5 text-[10px] font-semibold text-slate-500 dark:text-slate-300'>
                           Pendapatan
                         </th>
                       </tr>
                     </thead>
-                    <tbody className='divide-y divide-gray-100'>
+                    <tbody className='divide-y divide-gray-100 dark:divide-gray-700'>
                       {loadingRows ? (
                         <tr>
                           <td
@@ -962,23 +962,23 @@ export default function TrackingReservasiPage() {
                               className={cn(
                                 'transition-colors cursor-pointer',
                                 unit.includes(item.unit) && durasi.includes(item.durasi)
-                                  ? 'bg-green-100 ring-1 ring-inset ring-green-400'
-                                  : 'hover:bg-green-50/70',
+                                  ? 'bg-green-100 dark:bg-green-900/40 ring-1 ring-inset ring-green-400'
+                                  : 'hover:bg-green-50/70 dark:hover:bg-gray-800',
                               )}
                             >
-                              <td className='px-2 py-1.5 text-[10px] text-slate-400'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-400 dark:text-slate-500'>
                                 {index + 1}
                               </td>
-                              <td className='px-2 py-1.5 text-[10px] text-slate-700 font-medium'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-700 dark:text-slate-200 font-medium'>
                                 {item.unit}
                               </td>
-                              <td className='px-2 py-1.5 text-[10px] text-slate-600'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300'>
                                 {item.durasi}
                               </td>
-                              <td className='px-2 py-1.5 text-[10px] text-slate-600'>
+                              <td className='px-2 py-1.5 text-[10px] text-slate-600 dark:text-slate-300'>
                                 <div className='flex items-center gap-1.5'>
                                   <span>{formatRupiah(item.total)}</span>
-                                  <div className='flex-1 min-w-[36px] bg-green-100 rounded-full h-[4px] overflow-hidden'>
+                                  <div className='flex-1 min-w-[36px] bg-green-100 dark:bg-gray-700 rounded-full h-[4px] overflow-hidden'>
                                     <div
                                       className='bg-green-500 h-full rounded-full'
                                       style={{ width: `${pct}%` }}
@@ -1003,7 +1003,7 @@ export default function TrackingReservasiPage() {
           <div className='mt-4 overflow-hidden rounded-2xl bg-blue shadow-sm ring-1 ring-gray-200'>
             <div className='overflow-x-auto'>
               <table className='w-full text-sm text-left items-center bg-transparent lg:bg-white block lg:table'>
-                <thead className='bg-blue-950 justify-center hidden lg:table-header-group'>
+                <thead className='bg-blue-950 dark:bg-black/40 justify-center hidden lg:table-header-group'>
                   <tr>
                     {[
                       { label: 'No' },
@@ -1056,13 +1056,13 @@ export default function TrackingReservasiPage() {
                       return (
                         <React.Fragment key={row._id}>
                           <tr
-                            className='block lg:table-row mb-4 lg:mb-0 bg-white rounded-xl lg:rounded-none shadow-md lg:shadow-none border border-gray-200 lg:border-b lg:border-t-0 lg:border-x-0 p-3 lg:p-0 hover:bg-blue-50/50 transition-colors cursor-pointer relative overflow-hidden'
+                            className='block lg:table-row mb-4 lg:mb-0 bg-white dark:bg-gray-800/50 rounded-xl lg:rounded-none shadow-md lg:shadow-none border border-gray-200 dark:border-gray-700 lg:border-b lg:border-t-0 lg:border-x-0 p-3 lg:p-0 bg-[#f8fafc] dark:bg-gray-900/50 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors cursor-pointer relative overflow-hidden'
                           >
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5.5 sm:py-2 text-[10px] text-slate-500 sm:whitespace-nowrap border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5.5 sm:py-2 text-[10px] text-slate-500 dark:text-slate-400 sm:whitespace-nowrap border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>No</span>
                               <span>{(safePage - 1) * pageSize + i + 1}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-4 sm:py-2 border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-4 sm:py-2 border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400 text-[10px]'>⚙ Aksi</span>
                               <div className='flex items-center gap-1.5'>
                                 <button
@@ -1094,45 +1094,45 @@ export default function TrackingReservasiPage() {
                                 </button>
                               </div>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-3.5 lg:py-3 text-[10px] text-blue-700 border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-3.5 lg:py-3 text-[10px] text-blue-700 border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>KODE</span>
                               <span>{row.kode}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-700 font-medium border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-700 dark:text-slate-200 font-medium border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>👨‍💼 NAMA TAMU</span>
                               <span className='text-right'>{row.nama_tamu}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 dark:text-slate-300 border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>📅 TANGGAL RESERVASI</span>
                               <span className='text-right'>{row.tanggal_reservasi}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 dark:text-slate-300 border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>🏢 UNIT</span>
                               <span className='text-right'>{row.unit}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 dark:text-slate-300 border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>🕖 DURATION</span>
                               <span className='text-right'>{row.durasi}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-700 font-medium border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-700 dark:text-slate-200 font-medium border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>⏰ CHECK IN & CHECK OUT</span>
                               <span className='text-right'>{row.checkin_checkout}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 dark:text-slate-300 border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>💰 HARGA</span>
                               <span className='text-right'>{row.harga}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 font-mono border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 dark:text-slate-300 font-mono border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'> SISA PEMBAYARAN</span>
                               <span>{row.sisa}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 font-mono border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] text-slate-600 dark:text-slate-300 font-mono border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>💸 UANG MASUK</span>
                               <span>{row.uang_masuk}</span>
                             </td>
-                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] border-b border-dashed border-gray-100 lg:border-0 lg:table-cell'>
+                            <td className='flex justify-between items-center px-1 py-1.5 sm:px-5 lg:py-3 text-[10px] border-b border-dashed border-gray-100 dark:border-gray-700 lg:border-0 lg:table-cell'>
                               <span className='lg:hidden font-bold text-gray-400'>🏠 APART</span>
-                              <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-100 text-slate-600'>
+                              <span className='inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-100 text-slate-600 dark:text-slate-300'>
                                 {row.apart}
                               </span>
                             </td>
@@ -1296,7 +1296,7 @@ export default function TrackingReservasiPage() {
                   <button
                     disabled={safePage <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className='px-2.5 py-1 text-[10px] font-semibold rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors'
+                    className='px-2.5 py-1 text-[10px] font-semibold rounded-md border border-slate-300 bg-white text-slate-600 dark:text-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors'
                   >
                     ← Prev
                   </button>
@@ -1319,7 +1319,7 @@ export default function TrackingReservasiPage() {
                           'px-2.5 py-1 text-[10px] font-semibold rounded-md cursor-pointer transition-colors',
                           pageNum === safePage
                             ? 'bg-blue-600 text-white shadow-sm'
-                            : 'border border-slate-300 bg-white text-slate-600 hover:bg-slate-50',
+                            : 'border border-slate-300 bg-white text-slate-600 dark:text-slate-300 hover:bg-slate-50',
                         )}
                       >
                         {pageNum}
@@ -1329,7 +1329,7 @@ export default function TrackingReservasiPage() {
                   <button
                     disabled={safePage >= totalPages}
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    className='px-2.5 py-1 text-[10px] font-semibold rounded-md border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors'
+                    className='px-2.5 py-1 text-[10px] font-semibold rounded-md border border-slate-300 bg-white text-slate-600 dark:text-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors'
                   >
                     Next →
                   </button>

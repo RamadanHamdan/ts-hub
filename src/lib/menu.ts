@@ -28,6 +28,7 @@ export const MENUS_BY_ROLE: Record<Role, MenuSection[]> = {
         { label: 'Input Reservasi', href: '/input-reservasi', icon: 'CalendarPlus' },
         { label: 'Tracking Reservasi', href: '/tracking-reservasi', icon: 'BarChart3' },
         { label: 'Room Status', href: '/room-status', icon: 'Bed'},
+        { label: 'Table Status', href: '/table-status', icon: 'CalendarCheck'},
       ],
     },
     {
@@ -47,6 +48,7 @@ export const MENUS_BY_ROLE: Record<Role, MenuSection[]> = {
       items: [
         { label: 'Input Reservasi', href: '/input-reservasi', icon: 'Home' },
         { label: 'Room Status', href: '/room-status', icon: 'Bed'},
+        { label: 'Table Status', href: '/table-status', icon: 'CalendarCheck'},
       ],
     },
   ],
